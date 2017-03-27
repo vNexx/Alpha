@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+    <title>Test</title>
+    <link rel="stylesheet" href="./blueprint/components.css" />
+    <link rel="stylesheet" href="./css/alpha.css" />
+  </head>
+  <body>
+    <a-page>
+      <a-header slot="header">
+        <a-menu
+            view="horizontal"
+            content="[
+                {
+                    content: 'Профиль',
+                    value: 'profile'
+                },
+                {
+                    content: 'Главная',
+                    value: 'main'
+                },
+                {
+                    content: 'Выйти',
+                    value: 'logout'
+                }
+            ]"
+            slot="menu"
+        >
+        </a-menu>
+      </a-header>
+      <a-app-title>
+          <a-heading size="xl">Тестирование</a-heading>
+      </a-app-title>
+
+      <a-app-content>
+        <a-heading size="l"> Логический тест </a-heading>
+
+        <div class="question-block">
+          <a-paragraph>1. Вставьте пропущенное число </a-paragraph>
+          <!--14 -->
+          <span class="question-block__condition">
+            2   5   8   11   _
+          </span>
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>2. Найдите лишнее слово</a-paragraph>
+          <!--офис-->
+          <span class="question-block__condition">
+            дом   иглу   бунгало   офис   хижина
+          </span>
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>
+            3. Какая из шести пронумерованных фигур должна занять
+             свободное место (впишите номер в поле)
+           </a-paragraph>
+           <!-- 5 -->
+           <div class="question-block__condition">
+            <img src="./images/1_8_1.gif" alt="">
+            <br>
+            <img src="./images/1_8_2.gif" alt="">
+            <br>
+            <img src="./images/1_8_3.gif" alt="">
+            <br>
+            <img src="./images/1_8_4.gif" alt="">
+          </div>
+
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>
+            4. Найдите недостающее число
+           </a-paragraph>
+           <!-- 32 -->
+           <div class="question-block__condition">
+            <img src="./images/1_10.gif" alt="">
+           </div>
+
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>
+            5. Какая из шести пронумерованных фигур должна занять
+            свободное место (впишите номер в поле)
+           </a-paragraph>
+           <!-- 3 -->
+           <div class="question-block__condition">
+            <img src="./images/1_18_1.gif" alt="">
+            <br>
+            <img src="./images/1_18_2.gif" alt="">
+           </div>
+
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>
+            6. Вставьте недостающее число
+           </a-paragraph>
+           <!-- 6 -->
+           <div class="question-block__condition">
+            <img src="./images/21.gif" alt="">
+           </div>
+
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <a-paragraph>
+            7. Вставьте недостающее число
+           </a-paragraph>
+           <!-- 18 -->
+           <div class="question-block__condition">
+            <img src="./images/35.gif" alt="">
+           </div>
+
+          <div class="question-block__input">
+            <slot name="content">
+                <a-input  width="default" max-length="15" size="m"></a-input>
+            </slot>
+          </div>
+        </div>
+
+
+        <slot name="content">
+          <a-button view="extra" type="submit" size="m">Завершить</a-button>
+        </slot>
+
+
+
+      </a-app-content>
+      <a-footer slot="footer"></a-footer>
+    </a-page>
+    <script src="./blueprint/components.js"></script>
+  </body>
+</html>

@@ -35,3 +35,19 @@
     line-height: 1.5;
     font-size: 100%;
 }
+.question-block {
+  padding: 5px;
+  margin-bottom: 35px;
+}
+
+.question-block__condition {
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: #777;
+  display: inline-block;
+  color: #000;
+}
+
+.question-block__input {
+  margin-top: 15px;
+}
