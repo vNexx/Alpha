@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+    <title>login</title>
+    <link rel="stylesheet" href="./blueprint/components.css" />
+  </head>
+  <body>
+    <a-page>
+      <a-header slot="header">
+        <a-menu
+            view="horizontal"
+            content="[
+                {
+                    content: 'Регистрация',
+                    value: 'register'
+                },
+                {
+                    content: 'Главная',
+                    value: 'main'
+                }
+            ]"
+            slot="menu"
+        >
+        </a-menu>
+      </a-header>
+      <a-app-title>
+          <a-heading size="xl">Вход</a-heading>
+      </a-app-title>
+
+      <a-app-content>
+        <a-form size="m" id="example-form" class="example-form">
+           <a-form-field size="m">
+               <slot name="label">
+                   <a-label size="m">Логин</a-label>
+               </slot>
+               <slot name="content">
+                   <a-input  width="default" max-length="20" size="m"></a-input>
+               </slot>
+           </a-form-field>
+
+            <a-form-field size="m">
+                <slot name="label">
+                    <a-label size="m">Пароль</a-label>
+                </slot>
+                <slot name="content">
+                    <a-input type="password" width="default" max-length="20" size="m"></a-input>
+                </slot>
+            </a-form-field>
+
+
+           <a-form-field>
+               <a-button view="extra" type="submit" size="m">Войти</a-button>
+           </a-form-field>
+       </a-form>
+      </a-app-content>
+      <a-footer slot="footer"></a-footer>
+    </a-page>
+    <script src="./blueprint/components.js"></script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+        <title>Alfa Blueprint</title>
+        <link rel="stylesheet" href="./blueprint/components.css" />
+        <!--
+        <link rel="stylesheet" href="./blueprint/corporate-components.css" />
+        <script src="./blueprint/corporate-components.js"></script>
+        -->
+        <!--
+        <link rel="stylesheet" href="./blueprint/retail-components.css" />
+        <script src="./blueprint/retail-components.js"></script>
+        -->
+    </head>
+    <body>
+        <a-page>
+            <a-header slot="header">              
+              <a-menu
+                  view="horizontal"
+                  content="[
+                      {
+                          content: 'Экран 1',
+                          value: 'screen1'
+                      },
+                      {
+                          content: 'Регистрация',
+                          value: 'register'
+                      },
+                      {
+                          content: 'Вход',
+                          value: 'login',
+                          url: '/signin.html'
+                      }
+                  ]"
+                  slot="menu"
+            >
+            <a-link size="xl" url="/signin.html" text="Вход22">
+            </a-link>
+
+
+            </a-menu>
+          </a-header>
+          <a-app-title>
+              <a-heading size="xl">Заголовок страницы</a-heading>
+          </a-app-title>
+          <a-app-content>
+            <a-link size="xl" url="/signin.html" text="Вход">
+            </a-link>
+              <a-paragraph>
+                  Альфа-банк — крупнейший российский частный коммерческий банк. По данным рейтингов РБК и Forbes на конец 2010 года — седьмой в России банк по объёму активов. Главный офис расположен в Москве.
+              </a-paragraph>
+          </a-app-content>
+          <a-footer slot="footer"></a-footer>
+      </a-page>
+      <script src="./blueprint/components.js"></script>
+    </body>
+</html>

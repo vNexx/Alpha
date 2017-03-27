@@ -1,0 +1,37 @@
+.period-picker {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.period-picker__input,
+.period-picker__space {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.period-picker__space {
+    line-height: 40px;
+    opacity: .5;
+    text-align: center;
+}
+.period-picker_width_available {
+    width: 100%;
+    display: table;
+}
+
+.period-picker_width_available .period-picker__input,
+.period-picker_width_available .period-picker__space {
+    display: table-cell;
+}
+
+.col-sm-6 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.label {
+    font-family: Roboto,sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    font-size: 100%;
+}

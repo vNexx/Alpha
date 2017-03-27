@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+    <title>Profile</title>
+    <link rel="stylesheet" href="./blueprint/components.css" />
+  </head>
+  <body>
+    <a-page>
+      <a-header slot="header">
+        <a-menu
+            view="horizontal"
+            content="[
+                {
+                    content: 'Базовая информация',
+                    value: 'Basic_info'
+                },
+                {
+                    content: 'Образование',
+                    value: 'Education'
+                },
+                {
+                    content: 'Опыт работы',
+                    value: 'jobs'
+                },
+                {
+                    content: 'Навыки',
+                    value: 'skills'
+                },
+                {
+                    content: 'Главная',
+                    value: 'main'
+                },
+                {
+                    content: 'Выйти',
+                    value: 'logout'
+                }
+            ]"
+            slot="menu"
+        >
+        </a-menu>
+      </a-header>
+      <a-app-title>
+          <a-heading size="xl">Профиль</a-heading>
+      </a-app-title>
+
+      <a-app-content>
+        <a-heading size="l"> Базовая Информация </a-heading>
+        <a-form size="m" id="basic_info" class="example-form">
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Имя</a-label>
+              </slot>
+              <slot name="content">
+                  <a-input  width="default" max-length="30" size="m"></a-input>
+              </slot>
+          </a-form-field>
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Фамилия</a-label>
+              </slot>
+              <slot name="content">
+                  <a-input  width="default" max-length="30" size="m"></a-input>
+              </slot>
+          </a-form-field>
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Телефон</a-label>
+              </slot>
+              <slot name="content">
+                  <a-phone-input width="default" max-length="30" size="m"></a-phone-input>
+              </slot>
+          </a-form-field>
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Дата рождения</a-label>
+              </slot>
+              <slot name="content">
+                  <a-calendar-input
+                      width="default"
+                      max-length="40"
+                      value="29.03.2003"
+                      size="m"
+                  ></a-calendar-input>
+              </slot>
+          </a-form-field>
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Адрес электронной почты</a-label>
+              </slot>
+              <slot name="content">
+                  <a-email-input width="default" max-length="30" size="m"></a-email-input>
+              </slot>
+          </a-form-field>
+
+
+          <a-form-field>
+              <a-button view="extra" type="submit" size="m">Сохранить</a-button>
+          </a-form-field>
+        </a-form>
+
+      </a-app-content>
+      <a-footer slot="footer"></a-footer>
+    </a-page>
+    <script src="./blueprint/components.js"></script>
+  </body>
+</html>

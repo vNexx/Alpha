@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>select - Alfa Blueprint</title>
+        <link rel="stylesheet" href="../blueprint/components.css" />
+        <script src="../blueprint/components.js"></script>
+        
+        <script src="../scripts.js"></script>
+        <link rel="stylesheet" href="../styles.css" />
+        <script>BP.setTheme('alfa-on-white');</script>
+        <script src="../editor/ace.js"></script>
+        <script>
+            function pp() {
+                this.shift = ['\n']; // array of shifts
+                this.step = '    '; // 4 spaces
+                var maxdeep = 100, // nesting level
+                  ix = 0;
+
+                // initialize array with shifts //
+                for(ix=0;ix<maxdeep;ix++){
+                    this.shift.push(this.shift[ix]+this.step);
+                }
+
+            };
+
+            pp.prototype.xml = function(text) {
+
+                var ar = text.replace(/>\s{0,}</g,"><")
+                             .replace(/</g,"~::~<")
+                             .replace(/xmlns\:/g,"~::~xmlns:")
+                             .replace(/xmlns\=/g,"~::~xmlns=")
+                             .split('~::~'),
+                    len = ar.length,
+                    inComment = false,
+                    deep = 0,
+                    str = '',
+                    ix = 0;
+
+                    for(ix=0;ix<len;ix++) {
+                        // start comment or <![CDATA[...]]> or <!DOCTYPE //
+                        if(ar[ix].search(/<!/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                            inComment = true;
+                            // end comment  or <![CDATA[...]]> //
+                            if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) {
+                                inComment = false;
+                            }
+                        } else
+                        // end comment  or <![CDATA[...]]> //
+                        if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) {
+                            str += ar[ix];
+                            inComment = false;
+                        } else
+                        // <elm></elm> //
+                        if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
+                            /^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) {
+                            str += ar[ix];
+                            if(!inComment) deep--;
+                        } else
+                         // <elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 ) {
+                            str = !inComment ? str += this.shift[deep++]+ar[ix] : str += ar[ix];
+                        } else
+                         // <elm>...</elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // </elm> //
+                        if(ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[--deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <elm/> //
+                        if(ar[ix].search(/\/>/) > -1 ) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <? xml ... ?> //
+                        if(ar[ix].search(/<\?/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        } else
+                        // xmlns //
+                        if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        }
+
+                        else {
+                            str += ar[ix];
+                        }
+                    }
+
+                return  (str[0] == '\n') ? str.slice(1) : str;
+            }
+
+            String.prototype.replaceAll = function(search, replace, ignoreCase) {
+                if (ignoreCase) {
+                    var result = [];
+                    var _string = this.toLowerCase();
+                    var _search = search.toLowerCase();
+                    var start = 0, match, length = _search.length;
+                    while ((match = _string.indexOf(_search, start)) >= 0) {
+                        result.push(this.slice(start, match));
+                        start = match + length;
+                    }
+                    result.push(this.slice(start));
+                } else {
+                    result = this.split(search);
+                }
+                return result.join(replace);
+            }
+        </script>
+    </head>
+    <body>
+        <div class="component">
+            <div class="component__title">
+                <a-heading size="l">
+                    <nobr class="component__title-tag-open">&lt;a-select&gt;</nobr><nobr class="component__title-tag-close">&lt;/a-select&gt;</nobr>
+                </a-heading>
+            </div>
+
+            <div class="component__section">
+                <div class="component__description">
+                    <a-paragraph>
+                        
+                            <p>Компонент выпадающего списка</p>
+
+                        
+                    </a-paragraph>
+                </div>
+            </div>
+
+            
+                <div class="component__section">
+                    
+                        <div class="component__example-theme-switcher">
+                            <script>
+                                window.exampleChangeTheme = function (theme) {
+                                    document.getElementById('example-theme-provider')
+                                        .setAttribute('theme', theme);
+                                    document.getElementById('example-layout')
+                                        .setAttribute('theme', theme);
+                                }
+                            </script>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_dark"
+                                onclick="exampleChangeTheme('alfa-on-color')"
+                            ></div>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_light"
+                                onclick="exampleChangeTheme('alfa-on-white')"
+                            ></div>
+                        </div>
+                        <a-theme-provider theme="alfa-on-color" id="example-theme-provider">
+                            <div class="component__example" id="example-layout">
+                                <div>
+    <a-heading size="s">Режим "radio"</a-heading>
+</div>
+<div>
+    <a-select mode="radio" size="m" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-select mode="radio" size="m" disabled="true" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-heading size="s">Режим "check"</a-heading>
+</div>
+<div>
+    <a-select mode="check" size="m" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-select mode="check" size="m" disabled="true" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-heading size="s">Режим "radio-check"</a-heading>
+</div>
+<div>
+    <a-select mode="radio-check" size="m" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-select mode="radio-check" size="m" disabled="true" options="[
+        { value: 'Vkontakte', text: 'Vkontakte' },
+        { value: 'Facebook', text: 'Facebook' },
+        { value: 'Twitter', text: 'Twitter' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-heading size="s">Select с тянущейся шириной</a-heading>
+</div>
+<div>
+    <a-select mode="check" width="available" size="m" options="[
+        { value: '1', text: 'i saw the ghost of lena zavaroni' },
+        { value: '2', text: 'vanilla strawberry knickbocker glory' },
+        { value: '3', text: 'hans christian andersen plays musical statues' },
+        { value: '4', text: 'to don\'t take it out on this world by adams apples' },
+        { value: '5', text: 'sprinkling hundreds and thousands on a knickerbocker glory' },
+        { value: '6', text: 'i saw the ghost of lena zavaroni' }
+    ]"></a-select>
+</div>
+
+<div>
+    <a-select mode="check" width="available" size="m" disabled="true" options="[
+        { value: '1', text: 'i saw the ghost of lena zavaroni' },
+        { value: '2', text: 'vanilla strawberry knickbocker glory' },
+        { value: '3', text: 'hans christian andersen plays musical statues' },
+        { value: '4', text: 'to don\'t take it out on this world by adams apples' },
+        { value: '5', text: 'sprinkling hundreds and thousands on a knickerbocker glory' },
+        { value: '6', text: 'i saw the ghost of lena zavaroni' }
+    ]"></a-select>
+</div>
+
+                            </div>
+                        </a-theme-provider>
+                    
+                    <div class="component__example-code-layout" id="code-layout">
+                        <div class="component__example-code-mode">
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-blueprint"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="true"
+                                    text="Blueprint"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-html"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="false"
+                                    text="HTML"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                        </div>
+                        <div class="component__example-code-place">
+                            <a-select
+                                id="code-place-select"
+                                size="s"
+                                theme="alfa-on-white"
+                                mode="radio"
+                                value="[ 'embed' ]"
+                                options="[
+                                    { text: 'Под примером', value: 'embed', key: 'embed' },
+                                    { text: 'Сбоку примера', value: 'bar', key: 'bar' }
+                                ]"
+                            ></a-select>
+                            <script>
+                                document.querySelector('#code-place-select')
+                                    .addEventListener('change', function(event) {
+                                        if (event.detail[0][0] === 'embed') {
+                                            window.moveCodeToExample();
+                                        } else if (event.detail[0][0] === 'bar') {
+                                            window.moveCodeToBar();
+                                        }
+                                    });
+                            </script>
+                        </div>
+                        <div class="component__example-code">
+                            <div class="component__example-code-wrap">
+<pre id="editor">
+&lt;div&gt;
+    &lt;a-heading size=&quot;s&quot;&gt;Режим &quot;radio&quot;&lt;/a-heading&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;a-select mode=&quot;radio&quot; size=&quot;m&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-select mode=&quot;radio&quot; size=&quot;m&quot; disabled=&quot;true&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;s&quot;&gt;Режим &quot;check&quot;&lt;/a-heading&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;a-select mode=&quot;check&quot; size=&quot;m&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-select mode=&quot;check&quot; size=&quot;m&quot; disabled=&quot;true&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;s&quot;&gt;Режим &quot;radio-check&quot;&lt;/a-heading&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;a-select mode=&quot;radio-check&quot; size=&quot;m&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-select mode=&quot;radio-check&quot; size=&quot;m&quot; disabled=&quot;true&quot; options=&quot;[
+        { value: &#39;Vkontakte&#39;, text: &#39;Vkontakte&#39; },
+        { value: &#39;Facebook&#39;, text: &#39;Facebook&#39; },
+        { value: &#39;Twitter&#39;, text: &#39;Twitter&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;s&quot;&gt;Select с тянущейся шириной&lt;/a-heading&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;a-select mode=&quot;check&quot; width=&quot;available&quot; size=&quot;m&quot; options=&quot;[
+        { value: &#39;1&#39;, text: &#39;i saw the ghost of lena zavaroni&#39; },
+        { value: &#39;2&#39;, text: &#39;vanilla strawberry knickbocker glory&#39; },
+        { value: &#39;3&#39;, text: &#39;hans christian andersen plays musical statues&#39; },
+        { value: &#39;4&#39;, text: &#39;to don\&#39;t take it out on this world by adams apples&#39; },
+        { value: &#39;5&#39;, text: &#39;sprinkling hundreds and thousands on a knickerbocker glory&#39; },
+        { value: &#39;6&#39;, text: &#39;i saw the ghost of lena zavaroni&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-select mode=&quot;check&quot; width=&quot;available&quot; size=&quot;m&quot; disabled=&quot;true&quot; options=&quot;[
+        { value: &#39;1&#39;, text: &#39;i saw the ghost of lena zavaroni&#39; },
+        { value: &#39;2&#39;, text: &#39;vanilla strawberry knickbocker glory&#39; },
+        { value: &#39;3&#39;, text: &#39;hans christian andersen plays musical statues&#39; },
+        { value: &#39;4&#39;, text: &#39;to don\&#39;t take it out on this world by adams apples&#39; },
+        { value: &#39;5&#39;, text: &#39;sprinkling hundreds and thousands on a knickerbocker glory&#39; },
+        { value: &#39;6&#39;, text: &#39;i saw the ghost of lena zavaroni&#39; }
+    ]&quot;&gt;&lt;/a-select&gt;
+&lt;/div&gt;
+</pre>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            
+            <div class="component__section">
+                    <div>
+                        <a-heading size="m">Атрибуты</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Атрибут</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Тип</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m"><nobr>По-умолчанию</nobr></a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">mode</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'check'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип выпадающего списка Варианты: &#39;check&#39;, &#39;radio&#39;, &#39;radio-check&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">width</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'default'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Управление возможностью компонента занимать всю ширину родителя Варианты: &#39;default&#39;, &#39;available&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">directions</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Array</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">['bottom-left', 'bottom-right', 'top-left', 'top-right']</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Направления, в которые может открываться попап компонента</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">placeholder</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'Выберите:'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Подсказка, которая отображается в кнопке раскрывающегося списка, в случае, если ни один из пунктов выбран</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">disabled</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Boolean</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">false</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Управление возможностью редактирования значения</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">opened</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Boolean</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Управление видимостью выпадающего списка</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">equal-popup-width</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Boolean</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">false</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Ширинa выпадающего списка равна ширине кнопки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">value</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Array</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Список выбранных значений</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">options</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Array</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">[]</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Список вариантов выбора</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">size</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'m'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Размер компонента Варианты: &#39;s&#39;, &#39;m&#39;, &#39;l&#39;, &#39;xl&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">error</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Содержание попапа с ошибкой</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">error-directions</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Array</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">['right-center', 'right-top', 'right-bottom', 'bottom-left']</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Расположение попапа с ошибкой (в порядке приоритета) относительно точки открытия</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">theme</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тема компонента Варианты: &#39;alfa-on-color&#39;, &#39;alfa-on-white&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">render-button-content</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Function</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Кастомный метод рендера содержимого кнопки, принимает на вход: массив элементов типа <a-link url="#CheckedOption" text="CheckedOption" size="s" theme="alfa-on-white"></a-link></p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">Слоты</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Слот</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">error</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Содержание попапа с ошибкой</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">События</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Событие</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">focus</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик фокуса на компоненте</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">blur</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик потери фокуса компонентом</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">button-focus</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик фокуса на кнопке</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">button-blur</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик потери у кнопки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">menu-focus</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик фокуса на меню</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">menu-blur</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик потери фокуса у меню</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">click</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик клика по кнопке компонента</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">click-outside</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик клика вне компонента</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">change</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик изменения значения</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">key-down</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик нажатия на клавишу</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">Методы</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Метод</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">focus()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Устанавливает фокус на компонент.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">blur()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Убирает фокус с компонента.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">scrollTo()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Скроллит страницу до компонента.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+        </div>
+        <script>
+            (function() {
+                var example = true;
+                var exampleEmbed =  false ;
+
+                var editor = null;
+                var editorValue = '';
+                var beautify = null;
+                var changeTimeout = null;
+                var htmlMode = false;
+                var exampleLayout = null;
+                var exampleWindow = null;
+                var fragment = document.createElement('div');
+                var lastResolve = null;
+
+                if (exampleEmbed) {
+                    fragment = document
+                        .implementation
+                        .createDocument('http://www.w3.org/1999/xhtml', 'html', null);
+                    exampleLayout = document.getElementById('example-iframe');
+                    exampleWindow = exampleLayout.contentWindow;
+                } else {
+                    fragment = document.createElement('div');
+                    exampleLayout = document.getElementById('example-layout');
+                }
+
+                if (exampleWindow) {
+                    function receiveMessage(event) {
+                        var data = JSON.parse(event.data);
+
+                        var head = document.createElementNS('http://www.w3.org/1999/xhtml', 'head');
+                        var body = document.createElementNS('http://www.w3.org/1999/xhtml', 'body');
+
+                        head.innerHTML = data.head;
+                        body.innerHTML = data.body;
+
+                        fragment.documentElement.appendChild(head);
+                        fragment.documentElement.appendChild(body);
+
+                        lastResolve(fragment.documentElement);
+                    }
+
+                    window.addEventListener('message', receiveMessage, false);
+                }
+
+                function prepareFragment() {
+                    if (!exampleWindow) {
+                        fragment.innerHTML = exampleLayout.innerHTML.trim();
+                    } else {
+                        exampleWindow.postMessage(JSON.stringify({ type: 'get-content' }), '*');
+                    }
+
+                    return new Promise(function(resolve, reject) {
+                        if (!exampleWindow) {
+                            resolve(fragment);
+                        }
+
+                        lastResolve = resolve;
+                    });
+
+                    return lastPromise;
+                }
+
+                function cleanBpNodes(node) {
+                    // Remove scripts
+                    if (node.tagName &&
+                        (node.tagName === 'SCRIPT' || node.tagName === 'script')
+                    ) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove comments
+                    if (node.nodeType === Node.COMMENT_NODE) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove React attributes
+                    if (node.getAttribute) {
+                        if (node.getAttribute('data-reactroot') !== undefined) {
+                            node.removeAttribute('data-reactroot');
+                        }
+
+                        if (node.getAttribute('data-reactid') !== undefined) {
+                            node.removeAttribute('data-reactid');
+                        }
+                    }
+
+                    // Traverse child nodes
+                    if (node.childNodes) {
+                        for (var i = 0; i < node.childNodes.length; i++) {
+                            if (cleanBpNodes(node.childNodes[i])) {
+                                i = 0;
+                            }
+                        }
+                    }
+
+                    // Expand Blueprint node
+                    if (node.tagName &&
+                        (node.tagName.indexOf('a-'.toUpperCase()) === 0 ||
+                        node.tagName.indexOf('a-') === 0)
+                    ) {
+                        while (node.childNodes && node.childNodes.length > 0) {
+                            node.parentNode.insertBefore(node.childNodes[0], node);
+                        }
+
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                function handleEditorChange() {
+                    var newHeight =
+                        editor.getSession().getScreenLength() *
+                        editor.renderer.lineHeight +
+                        editor.renderer.scrollBar.getWidth();
+
+                    var editorElement = document.getElementById('editor');
+                    editorElement.style.height = newHeight.toString() + 'px';
+
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.resize();
+
+                    if (/*!exampleEmbed && */!htmlMode) {
+                        if (changeTimeout) {
+                            clearTimeout(changeTimeout);
+                            changeTimeout = null;
+                        }
+
+                        changeTimeout = setTimeout(function() {
+                            changeTimeout = null;
+
+                            var value = editorValue = editor.getValue();
+                            var annotations = editor.getSession().getAnnotations();
+                            var errors = annotations.filter(function(annotation) {
+                                return annotation.type === 'error';
+                            });
+
+                            if (errors.length === 0) {
+                                if (!exampleEmbed) {
+                                    try {
+                                        exampleLayout.innerHTML = value;
+
+                                        var scripts = exampleLayout.getElementsByTagName('script');
+                                        for (var s = 0; s < scripts.length; s++) {
+                                            window.eval(scripts[s].innerHTML);
+                                        }
+                                    } catch (e) {
+                                        console.error(e.stack || e);
+                                    }
+                                } else {
+                                    var tmpElement = document.createElement('div');
+                                    tmpElement.innerHTML = value
+                                        .replace('<!DOCTYPE html>', '')
+                                        .replace('<html>', '')
+                                        .replace('</html>', '')
+                                        .replace('<head', '<tmp-head')
+                                        .replace('</head', '</tmp-head')
+                                        .replace('<body', '<tmp-body')
+                                        .replace('</body', '</tmp-body');
+
+                                    var head = tmpElement.querySelector('tmp-head').innerHTML;
+                                    var body = tmpElement.querySelector('tmp-body').innerHTML;
+
+                                    exampleWindow.postMessage(JSON.stringify({
+                                        type: 'set-content',
+                                        head: head,
+                                        body: body
+                                    }), '*');
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+
+                function setupEditorRadioButtons() {
+                    var bpRadio = document.getElementById('example-radio-blueprint');
+                    var htmlRadio = document.getElementById('example-radio-html');
+
+                    bpRadio.addEventListener('click', function() {
+                        if (!htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = false;
+
+                        bpRadio.disabled = true;
+                        htmlRadio.disabled = false;
+
+                        //editor.setOptions({ readOnly: exampleEmbed });
+                        editor.setOptions({ readOnly: false });
+
+                        var scrollX = window.pageXOffset;
+                        var scrollY = window.pageYOffset;
+                        editor.setValue(editorValue, -1);
+                        window.scrollTo(scrollX, scrollY);
+                    });
+
+                    htmlRadio.addEventListener('click', function() {
+                        if (htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = true;
+
+                        bpRadio.disabled = false;
+                        htmlRadio.disabled = true;
+
+                        editor.setOptions({ readOnly: true });
+
+                        prepareFragment().then(function(fragment) {
+                            cleanBpNodes(fragment);
+
+                            var xmlFragment = document.createDocumentFragment();
+                            while (fragment.childNodes.length > 0) {
+                                xmlFragment.appendChild(fragment.childNodes[0]);
+                            }
+
+                            var serializer = new XMLSerializer();
+                            var xmlString = serializer
+                                .serializeToString(xmlFragment)
+                                .replaceAll(
+                                    ' xmlns="http://www.w3.org/1999/xhtml"',
+                                    ''
+                                );
+
+                            if (exampleWindow) {
+                                xmlString = '<!DOCTYPE html><html>' + xmlString + '</html>';
+                            }
+
+                            var f = new pp();
+                            var newValue = f.xml(xmlString);
+
+                            var scrollX = window.pageXOffset;
+                            var scrollY = window.pageYOffset;
+                            editor.setValue(newValue, -1);
+                            window.scrollTo(scrollX, scrollY);
+                        });
+                    });
+                }
+
+                function setupEditor() {
+                    editor = ace.edit('editor');
+                    beautify = ace.require('ace/ext/beautify');
+
+                    editor.setTheme('ace/theme/kuroir');
+                    editor.session.setMode('ace/mode/html');
+                    editor.setAutoScrollEditorIntoView(true);
+                    editor.setOptions({
+                        readOnly: false,//exampleEmbed,
+                        showPrintMargin: false
+                    });
+                    editor.renderer.setShowGutter(false);
+                    editor.$blockScrolling = Infinity;
+
+                    var editorElement = document.getElementById('editor');
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.getSession().on('change', handleEditorChange);
+
+                    editorValue = editor.getValue();
+
+                    setupEditorRadioButtons();
+                }
+
+                if (example) {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        setupEditor();
+                    });
+                }
+            } ());
+        </script>
+    </body>
+</html>

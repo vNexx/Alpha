@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+    <title>Profile</title>
+    <link rel="stylesheet" href="./blueprint/components.css" />
+  </head>
+  <body>
+    <a-page>
+      <a-header slot="header">
+        <a-menu
+            view="horizontal"
+            content="[
+                {
+                    content: 'Базовая информация',
+                    value: 'Basic_info'
+                },
+                {
+                    content: 'Образование',
+                    value: 'Education'
+                },
+                {
+                    content: 'Опыт работы',
+                    value: 'jobs'
+                },
+                {
+                    content: 'Навыки',
+                    value: 'skills'
+                },
+                {
+                    content: 'Главная',
+                    value: 'main',
+                    url: '/main'
+                },
+                {
+                    content: 'Выйти',
+                    value: 'logout'
+                }
+            ]"
+            slot="menu"
+        >
+        <a-menu-item url="/index.html" value="main" size="xl" view="link"></a-menu-item>
+
+        </a-menu>
+      </a-header>
+      <a-app-title>
+          <a-heading size="xl">Профиль</a-heading>
+      </a-app-title>
+      <a-app-content>
+        <a-heading size="l"> Навыки </a-heading>
+        <a-form size="m" id="skills" class="example-form">
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Навык</a-label>
+              </slot>
+              <slot name="content">
+                  <a-input  width="available" max-length="20" size="m"></a-input>
+              </slot>
+          </a-form-field>
+
+          <a-form-field size="m">
+              <slot name="label">
+                  <a-label size="m">Описание</a-label>
+              </slot>
+              <slot name="content">
+                <a-textarea
+                    placeholder="Описание навыка"
+                    width="available"
+                    ></a-textarea>
+              </slot>
+          </a-form-field>
+
+          <a-form-field>
+              <a-button view="extra" type="submit" size="m">Сохранить</a-button>
+              <a-button size="m">
+                Добавть навык
+              </a-button>
+          </a-form-field>
+        </a-form>
+      </a-app-content>
+      <a-footer slot="footer"></a-footer>
+    </a-page>
+    <script src="./blueprint/components.js"></script>
+  </body>
+</html>

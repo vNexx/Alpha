@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>icon - Alfa Blueprint</title>
+        <link rel="stylesheet" href="../blueprint/components.css" />
+        <script src="../blueprint/components.js"></script>
+        
+        <script src="../scripts.js"></script>
+        <link rel="stylesheet" href="../styles.css" />
+        <script>BP.setTheme('alfa-on-white');</script>
+        <script src="../editor/ace.js"></script>
+        <script>
+            function pp() {
+                this.shift = ['\n']; // array of shifts
+                this.step = '    '; // 4 spaces
+                var maxdeep = 100, // nesting level
+                  ix = 0;
+
+                // initialize array with shifts //
+                for(ix=0;ix<maxdeep;ix++){
+                    this.shift.push(this.shift[ix]+this.step);
+                }
+
+            };
+
+            pp.prototype.xml = function(text) {
+
+                var ar = text.replace(/>\s{0,}</g,"><")
+                             .replace(/</g,"~::~<")
+                             .replace(/xmlns\:/g,"~::~xmlns:")
+                             .replace(/xmlns\=/g,"~::~xmlns=")
+                             .split('~::~'),
+                    len = ar.length,
+                    inComment = false,
+                    deep = 0,
+                    str = '',
+                    ix = 0;
+
+                    for(ix=0;ix<len;ix++) {
+                        // start comment or <![CDATA[...]]> or <!DOCTYPE //
+                        if(ar[ix].search(/<!/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                            inComment = true;
+                            // end comment  or <![CDATA[...]]> //
+                            if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) {
+                                inComment = false;
+                            }
+                        } else
+                        // end comment  or <![CDATA[...]]> //
+                        if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) {
+                            str += ar[ix];
+                            inComment = false;
+                        } else
+                        // <elm></elm> //
+                        if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
+                            /^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) {
+                            str += ar[ix];
+                            if(!inComment) deep--;
+                        } else
+                         // <elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 ) {
+                            str = !inComment ? str += this.shift[deep++]+ar[ix] : str += ar[ix];
+                        } else
+                         // <elm>...</elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // </elm> //
+                        if(ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[--deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <elm/> //
+                        if(ar[ix].search(/\/>/) > -1 ) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <? xml ... ?> //
+                        if(ar[ix].search(/<\?/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        } else
+                        // xmlns //
+                        if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        }
+
+                        else {
+                            str += ar[ix];
+                        }
+                    }
+
+                return  (str[0] == '\n') ? str.slice(1) : str;
+            }
+
+            String.prototype.replaceAll = function(search, replace, ignoreCase) {
+                if (ignoreCase) {
+                    var result = [];
+                    var _string = this.toLowerCase();
+                    var _search = search.toLowerCase();
+                    var start = 0, match, length = _search.length;
+                    while ((match = _string.indexOf(_search, start)) >= 0) {
+                        result.push(this.slice(start, match));
+                        start = match + length;
+                    }
+                    result.push(this.slice(start));
+                } else {
+                    result = this.split(search);
+                }
+                return result.join(replace);
+            }
+        </script>
+    </head>
+    <body>
+        <div class="component">
+            <div class="component__title">
+                <a-heading size="l">
+                    <nobr class="component__title-tag-open">&lt;a-icon&gt;</nobr><nobr class="component__title-tag-close">&lt;/a-icon&gt;</nobr>
+                </a-heading>
+            </div>
+
+            <div class="component__section">
+                <div class="component__description">
+                    <a-paragraph>
+                        
+                            Компонент иконки. Содержит в себе пресеты самых популярных иконок.
+
+                        
+                    </a-paragraph>
+                </div>
+            </div>
+
+            
+                <div class="component__section">
+                    
+                        <div class="component__example-theme-switcher">
+                            <script>
+                                window.exampleChangeTheme = function (theme) {
+                                    document.getElementById('example-theme-provider')
+                                        .setAttribute('theme', theme);
+                                    document.getElementById('example-layout')
+                                        .setAttribute('theme', theme);
+                                }
+                            </script>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_dark"
+                                onclick="exampleChangeTheme('alfa-on-color')"
+                            ></div>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_light"
+                                onclick="exampleChangeTheme('alfa-on-white')"
+                            ></div>
+                        </div>
+                        <a-theme-provider theme="alfa-on-color" id="example-theme-provider">
+                            <div class="component__example" id="example-layout">
+                                <div>
+    <a-heading size="m">Действия</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" action="check"></a-icon>
+    <a-icon size="xl" action="error"></a-icon>
+    <a-icon size="xl" action="fail"></a-icon>
+    <a-icon size="xl" action="ok"></a-icon>
+    <a-icon size="xl" action="repeat"></a-icon>
+    <a-icon size="xl" action="down"></a-icon>
+    <a-icon size="xl" action="left"></a-icon>
+    <a-icon size="xl" action="right"></a-icon>
+    <a-icon size="xl" action="up"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" action="check"></a-icon>
+    <a-icon size="l" action="error"></a-icon>
+    <a-icon size="l" action="fail"></a-icon>
+    <a-icon size="l" action="ok"></a-icon>
+    <a-icon size="l" action="repeat"></a-icon>
+    <a-icon size="l" action="down"></a-icon>
+    <a-icon size="l" action="left"></a-icon>
+    <a-icon size="l" action="right"></a-icon>
+    <a-icon size="l" action="up"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" action="check"></a-icon>
+    <a-icon size="m" action="error"></a-icon>
+    <a-icon size="m" action="fail"></a-icon>
+    <a-icon size="m" action="ok"></a-icon>
+    <a-icon size="m" action="repeat"></a-icon>
+    <a-icon size="m" action="down"></a-icon>
+    <a-icon size="m" action="left"></a-icon>
+    <a-icon size="m" action="right"></a-icon>
+    <a-icon size="m" action="up"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" action="check"></a-icon>
+    <a-icon size="s" action="error"></a-icon>
+    <a-icon size="s" action="fail"></a-icon>
+    <a-icon size="s" action="ok"></a-icon>
+    <a-icon size="s" action="repeat"></a-icon>
+    <a-icon size="s" action="down"></a-icon>
+    <a-icon size="s" action="left"></a-icon>
+    <a-icon size="s" action="right"></a-icon>
+    <a-icon size="s" action="up"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Действия (цветные)</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" action="error" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" action="ok" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" action="error" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" action="ok" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" action="error" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" action="ok" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" action="error" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" action="ok" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Банки</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" bank="244"></a-icon>
+    <a-icon size="xl" bank="256"></a-icon>
+    <a-icon size="xl" bank="285"></a-icon>
+    <a-icon size="xl" bank="404"></a-icon>
+    <a-icon size="xl" bank="439"></a-icon>
+    <a-icon size="xl" bank="1309"></a-icon>
+    <a-icon size="xl" bank="1415"></a-icon>
+    <a-icon size="xl" bank="1490"></a-icon>
+    <a-icon size="xl" bank="1516"></a-icon>
+    <a-icon size="xl" bank="2377"></a-icon>
+    <a-icon size="xl" bank="2449"></a-icon>
+    <a-icon size="xl" bank="3001"></a-icon>
+    <a-icon size="xl" bank="3308"></a-icon>
+    <a-icon size="xl" bank="4267"></a-icon>
+    <a-icon size="xl" bank="4924"></a-icon>
+    <a-icon size="xl" bank="5030"></a-icon>
+    <a-icon size="xl" bank="5475"></a-icon>
+    <a-icon size="xl" bank="6415"></a-icon>
+    <a-icon size="xl" bank="7311"></a-icon>
+    <a-icon size="xl" bank="7686"></a-icon>
+    <a-icon size="xl" bank="8967"></a-icon>
+    <a-icon size="xl" bank="9908"></a-icon>
+    <a-icon size="xl" bank="10223"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" bank="244"></a-icon>
+    <a-icon size="l" bank="256"></a-icon>
+    <a-icon size="l" bank="285"></a-icon>
+    <a-icon size="l" bank="404"></a-icon>
+    <a-icon size="l" bank="439"></a-icon>
+    <a-icon size="l" bank="1309"></a-icon>
+    <a-icon size="l" bank="1415"></a-icon>
+    <a-icon size="l" bank="1490"></a-icon>
+    <a-icon size="l" bank="1516"></a-icon>
+    <a-icon size="l" bank="2377"></a-icon>
+    <a-icon size="l" bank="2449"></a-icon>
+    <a-icon size="l" bank="3001"></a-icon>
+    <a-icon size="l" bank="3308"></a-icon>
+    <a-icon size="l" bank="4267"></a-icon>
+    <a-icon size="l" bank="4924"></a-icon>
+    <a-icon size="l" bank="5030"></a-icon>
+    <a-icon size="l" bank="5475"></a-icon>
+    <a-icon size="l" bank="6415"></a-icon>
+    <a-icon size="l" bank="7311"></a-icon>
+    <a-icon size="l" bank="7686"></a-icon>
+    <a-icon size="l" bank="8967"></a-icon>
+    <a-icon size="l" bank="9908"></a-icon>
+    <a-icon size="l" bank="10223"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" bank="244"></a-icon>
+    <a-icon size="m" bank="256"></a-icon>
+    <a-icon size="m" bank="285"></a-icon>
+    <a-icon size="m" bank="404"></a-icon>
+    <a-icon size="m" bank="439"></a-icon>
+    <a-icon size="m" bank="1309"></a-icon>
+    <a-icon size="m" bank="1415"></a-icon>
+    <a-icon size="m" bank="1490"></a-icon>
+    <a-icon size="m" bank="1516"></a-icon>
+    <a-icon size="m" bank="2377"></a-icon>
+    <a-icon size="m" bank="2449"></a-icon>
+    <a-icon size="m" bank="3001"></a-icon>
+    <a-icon size="m" bank="3308"></a-icon>
+    <a-icon size="m" bank="4267"></a-icon>
+    <a-icon size="m" bank="4924"></a-icon>
+    <a-icon size="m" bank="5030"></a-icon>
+    <a-icon size="m" bank="5475"></a-icon>
+    <a-icon size="m" bank="6415"></a-icon>
+    <a-icon size="m" bank="7311"></a-icon>
+    <a-icon size="m" bank="7686"></a-icon>
+    <a-icon size="m" bank="8967"></a-icon>
+    <a-icon size="m" bank="9908"></a-icon>
+    <a-icon size="m" bank="10223"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" bank="244"></a-icon>
+    <a-icon size="s" bank="256"></a-icon>
+    <a-icon size="s" bank="285"></a-icon>
+    <a-icon size="s" bank="404"></a-icon>
+    <a-icon size="s" bank="439"></a-icon>
+    <a-icon size="s" bank="1309"></a-icon>
+    <a-icon size="s" bank="1415"></a-icon>
+    <a-icon size="s" bank="1490"></a-icon>
+    <a-icon size="s" bank="1516"></a-icon>
+    <a-icon size="s" bank="2377"></a-icon>
+    <a-icon size="s" bank="2449"></a-icon>
+    <a-icon size="s" bank="3001"></a-icon>
+    <a-icon size="s" bank="3308"></a-icon>
+    <a-icon size="s" bank="4267"></a-icon>
+    <a-icon size="s" bank="4924"></a-icon>
+    <a-icon size="s" bank="5030"></a-icon>
+    <a-icon size="s" bank="5475"></a-icon>
+    <a-icon size="s" bank="6415"></a-icon>
+    <a-icon size="s" bank="7311"></a-icon>
+    <a-icon size="s" bank="7686"></a-icon>
+    <a-icon size="s" bank="8967"></a-icon>
+    <a-icon size="s" bank="9908"></a-icon>
+    <a-icon size="s" bank="10223"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Банки (цветные)</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" bank="244" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="256" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="285" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="404" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="439" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="1309" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="1415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="1490" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="1516" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="2377" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="2449" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="3001" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="3308" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="4267" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="4924" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="5030" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="5475" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="6415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="7311" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="7686" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="8967" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="9908" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" bank="10223" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" bank="244" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="256" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="285" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="404" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="439" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="1309" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="1415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="1490" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="1516" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="2377" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="2449" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="3001" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="3308" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="4267" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="4924" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="5030" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="5475" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="6415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="7311" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="7686" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="8967" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="9908" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" bank="10223" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" bank="244" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="256" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="285" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="404" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="439" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="1309" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="1415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="1490" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="1516" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="2377" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="2449" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="3001" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="3308" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="4267" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="4924" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="5030" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="5475" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="6415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="7311" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="7686" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="8967" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="9908" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" bank="10223" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" bank="244" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="256" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="285" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="404" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="439" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="1309" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="1415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="1490" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="1516" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="2377" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="2449" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="3001" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="3308" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="4267" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="4924" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="5030" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="5475" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="6415" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="7311" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="7686" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="8967" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="9908" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" bank="10223" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Карты</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" card="maestro"></a-icon>
+    <a-icon size="xl" card="mastercard"></a-icon>
+    <a-icon size="xl" card="visa"></a-icon>
+    <a-icon size="xl" card="visaelectron"></a-icon>
+    <a-icon size="xl" card="belkart"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" card="maestro"></a-icon>
+    <a-icon size="l" card="mastercard"></a-icon>
+    <a-icon size="l" card="visa"></a-icon>
+    <a-icon size="l" card="visaelectron"></a-icon>
+    <a-icon size="l" card="belkart"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" card="maestro"></a-icon>
+    <a-icon size="m" card="mastercard"></a-icon>
+    <a-icon size="m" card="visa"></a-icon>
+    <a-icon size="m" card="visaelectron"></a-icon>
+    <a-icon size="m" card="belkart"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" card="maestro"></a-icon>
+    <a-icon size="s" card="mastercard"></a-icon>
+    <a-icon size="s" card="visa"></a-icon>
+    <a-icon size="s" card="visaelectron"></a-icon>
+    <a-icon size="s" card="belkart"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Карты (цветные)</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" card="maestro" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" card="mastercard" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" card="visa" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" card="visaelectron" theme="alfa-on-colored"></a-icon>
+    <a-icon size="xl" card="belkart" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" card="maestro" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" card="mastercard" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" card="visa" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" card="visaelectron" theme="alfa-on-colored"></a-icon>
+    <a-icon size="l" card="belkart" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" card="maestro" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" card="mastercard" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" card="visa" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" card="visaelectron" theme="alfa-on-colored"></a-icon>
+    <a-icon size="m" card="belkart" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" card="maestro" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" card="mastercard" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" card="visa" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" card="visaelectron" theme="alfa-on-colored"></a-icon>
+    <a-icon size="s" card="belkart" theme="alfa-on-colored"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Файлы</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" format="1c"></a-icon>
+    <a-icon size="xl" format="csv"></a-icon>
+    <a-icon size="xl" format="doc"></a-icon>
+    <a-icon size="xl" format="pdf"></a-icon>
+    <a-icon size="xl" format="png"></a-icon>
+    <a-icon size="xl" format="ppt"></a-icon>
+    <a-icon size="xl" format="sketch"></a-icon>
+    <a-icon size="xl" format="svg"></a-icon>
+    <a-icon size="xl" format="txt"></a-icon>
+    <a-icon size="xl" format="xls"></a-icon>
+    <a-icon size="xl" format="xml"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" format="1c"></a-icon>
+    <a-icon size="l" format="csv"></a-icon>
+    <a-icon size="l" format="doc"></a-icon>
+    <a-icon size="l" format="pdf"></a-icon>
+    <a-icon size="l" format="png"></a-icon>
+    <a-icon size="l" format="ppt"></a-icon>
+    <a-icon size="l" format="sketch"></a-icon>
+    <a-icon size="l" format="svg"></a-icon>
+    <a-icon size="l" format="txt"></a-icon>
+    <a-icon size="l" format="xls"></a-icon>
+    <a-icon size="l" format="xml"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" format="1c"></a-icon>
+    <a-icon size="m" format="csv"></a-icon>
+    <a-icon size="m" format="doc"></a-icon>
+    <a-icon size="m" format="pdf"></a-icon>
+    <a-icon size="m" format="png"></a-icon>
+    <a-icon size="m" format="ppt"></a-icon>
+    <a-icon size="m" format="sketch"></a-icon>
+    <a-icon size="m" format="svg"></a-icon>
+    <a-icon size="m" format="txt"></a-icon>
+    <a-icon size="m" format="xls"></a-icon>
+    <a-icon size="m" format="xml"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" format="1c"></a-icon>
+    <a-icon size="s" format="csv"></a-icon>
+    <a-icon size="s" format="doc"></a-icon>
+    <a-icon size="s" format="pdf"></a-icon>
+    <a-icon size="s" format="png"></a-icon>
+    <a-icon size="s" format="ppt"></a-icon>
+    <a-icon size="s" format="sketch"></a-icon>
+    <a-icon size="s" format="svg"></a-icon>
+    <a-icon size="s" format="txt"></a-icon>
+    <a-icon size="s" format="xls"></a-icon>
+    <a-icon size="s" format="xml"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Валюта</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" currency="rub"></a-icon>
+    <a-icon size="xl" currency="chf"></a-icon>
+    <a-icon size="xl" currency="eur"></a-icon>
+    <a-icon size="xl" currency="gbp"></a-icon>
+    <a-icon size="xl" currency="jpy"></a-icon>
+    <a-icon size="xl" currency="usd"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" currency="rub"></a-icon>
+    <a-icon size="l" currency="chf"></a-icon>
+    <a-icon size="l" currency="eur"></a-icon>
+    <a-icon size="l" currency="gbp"></a-icon>
+    <a-icon size="l" currency="jpy"></a-icon>
+    <a-icon size="l" currency="usd"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" currency="rub"></a-icon>
+    <a-icon size="m" currency="chf"></a-icon>
+    <a-icon size="m" currency="eur"></a-icon>
+    <a-icon size="m" currency="gbp"></a-icon>
+    <a-icon size="m" currency="jpy"></a-icon>
+    <a-icon size="m" currency="usd"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" currency="rub"></a-icon>
+    <a-icon size="s" currency="chf"></a-icon>
+    <a-icon size="s" currency="eur"></a-icon>
+    <a-icon size="s" currency="gbp"></a-icon>
+    <a-icon size="s" currency="jpy"></a-icon>
+    <a-icon size="s" currency="usd"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Инструменты</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" tool="close"></a-icon>
+    <a-icon size="xl" tool="calendar"></a-icon>
+    <a-icon size="xl" tool="email"></a-icon>
+    <a-icon size="xl" tool="help"></a-icon>
+    <a-icon size="xl" tool="helpfilled"></a-icon>
+    <a-icon size="xl" tool="info"></a-icon>
+    <a-icon size="xl" tool="printer"></a-icon>
+    <a-icon size="xl" tool="search"></a-icon>
+</div>
+
+<div>
+    <a-icon size="l" tool="close"></a-icon>
+    <a-icon size="l" tool="calendar"></a-icon>
+    <a-icon size="l" tool="email"></a-icon>
+    <a-icon size="l" tool="help"></a-icon>
+    <a-icon size="l" tool="helpfilled"></a-icon>
+    <a-icon size="l" tool="info"></a-icon>
+    <a-icon size="l" tool="printer"></a-icon>
+    <a-icon size="l" tool="search"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" tool="close"></a-icon>
+    <a-icon size="m" tool="calendar"></a-icon>
+    <a-icon size="m" tool="email"></a-icon>
+    <a-icon size="m" tool="help"></a-icon>
+    <a-icon size="m" tool="helpfilled"></a-icon>
+    <a-icon size="m" tool="info"></a-icon>
+    <a-icon size="m" tool="printer"></a-icon>
+    <a-icon size="m" tool="search"></a-icon>
+</div>
+
+<div>
+    <a-icon size="s" tool="close"></a-icon>
+    <a-icon size="s" tool="calendar"></a-icon>
+    <a-icon size="s" tool="email"></a-icon>
+    <a-icon size="s" tool="help"></a-icon>
+    <a-icon size="s" tool="helpfilled"></a-icon>
+    <a-icon size="s" tool="info"></a-icon>
+    <a-icon size="s" tool="printer"></a-icon>
+    <a-icon size="s" tool="search"></a-icon>
+</div>
+
+<div>
+    <a-heading size="m">Категории</a-heading>
+</div>
+
+<div>
+    <a-icon size="xl" category="appliances"></a-icon>
+    <a-icon size="xl" category="auto"></a-icon>
+    <a-icon size="xl" category="books_movies"></a-icon>
+    <a-icon size="xl" category="business"></a-icon>
+    <a-icon size="xl" category="charity"></a-icon>
+    <a-icon size="xl" category="dress"></a-icon>
+    <a-icon size="xl" category="education"></a-icon>
+    <a-icon size="xl" category="entertainment"></a-icon>
+    <a-icon size="xl" category="family"></a-icon>
+    <a-icon size="xl" category="finance"></a-icon>
+    <a-icon size="xl" category="forgot"></a-icon>
+    <a-icon size="xl" category="gasoline"></a-icon>
+    <a-icon size="xl" category="housekeeping"></a-icon>
+    <a-icon size="xl" category="investments"></a-icon>
+    <a-icon size="xl" category="loans"></a-icon>
+    <a-icon size="xl" category="medicine"></a-icon>
+    <a-icon size="xl" category="mobile_internet"></a-icon>
+    <a-icon size="xl" category="mortgage"></a-icon>
+    <a-icon size="xl" category="other"></a-icon>
+    <a-icon size="xl" category="person"></a-icon>
+    <a-icon size="xl" category="pets"></a-icon>
+    <a-icon size="xl" category="rent"></a-icon>
+    <a-icon size="xl" category="repairs"></a-icon>
+    <a-icon size="xl" category="restaurants"></a-icon>
+    <a-icon size="xl" category="shopping"></a-icon>
+    <a-icon size="xl" category="tax_fines"></a-icon>
+    <a-icon size="xl" category="transport"></a-icon>
+    <a-icon size="xl" category="travel"></a-icon>
+    <a-icon size="xl" category="user"></a-icon>
+</div>
+
+<div>
+    <a-icon size="m" category="appliances"></a-icon>
+    <a-icon size="m" category="auto"></a-icon>
+    <a-icon size="m" category="books_movies"></a-icon>
+    <a-icon size="m" category="business"></a-icon>
+    <a-icon size="m" category="charity"></a-icon>
+    <a-icon size="m" category="dress"></a-icon>
+    <a-icon size="m" category="education"></a-icon>
+    <a-icon size="m" category="entertainment"></a-icon>
+    <a-icon size="m" category="family"></a-icon>
+    <a-icon size="m" category="finance"></a-icon>
+    <a-icon size="m" category="forgot"></a-icon>
+    <a-icon size="m" category="gasoline"></a-icon>
+    <a-icon size="m" category="housekeeping"></a-icon>
+    <a-icon size="m" category="investments"></a-icon>
+    <a-icon size="m" category="loans"></a-icon>
+    <a-icon size="m" category="medicine"></a-icon>
+    <a-icon size="m" category="mobile_internet"></a-icon>
+    <a-icon size="m" category="mortgage"></a-icon>
+    <a-icon size="m" category="other"></a-icon>
+    <a-icon size="m" category="person"></a-icon>
+    <a-icon size="m" category="pets"></a-icon>
+    <a-icon size="m" category="rent"></a-icon>
+    <a-icon size="m" category="repairs"></a-icon>
+    <a-icon size="m" category="restaurants"></a-icon>
+    <a-icon size="m" category="shopping"></a-icon>
+    <a-icon size="m" category="tax_fines"></a-icon>
+    <a-icon size="m" category="transport"></a-icon>
+    <a-icon size="m" category="travel"></a-icon>
+    <a-icon size="m" category="user"></a-icon>
+</div>
+
+                            </div>
+                        </a-theme-provider>
+                    
+                    <div class="component__example-code-layout" id="code-layout">
+                        <div class="component__example-code-mode">
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-blueprint"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="true"
+                                    text="Blueprint"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-html"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="false"
+                                    text="HTML"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                        </div>
+                        <div class="component__example-code-place">
+                            <a-select
+                                id="code-place-select"
+                                size="s"
+                                theme="alfa-on-white"
+                                mode="radio"
+                                value="[ 'embed' ]"
+                                options="[
+                                    { text: 'Под примером', value: 'embed', key: 'embed' },
+                                    { text: 'Сбоку примера', value: 'bar', key: 'bar' }
+                                ]"
+                            ></a-select>
+                            <script>
+                                document.querySelector('#code-place-select')
+                                    .addEventListener('change', function(event) {
+                                        if (event.detail[0][0] === 'embed') {
+                                            window.moveCodeToExample();
+                                        } else if (event.detail[0][0] === 'bar') {
+                                            window.moveCodeToBar();
+                                        }
+                                    });
+                            </script>
+                        </div>
+                        <div class="component__example-code">
+                            <div class="component__example-code-wrap">
+<pre id="editor">
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Действия&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;check&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;error&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;fail&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;ok&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;repeat&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;down&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;left&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;right&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;up&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;check&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;error&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;fail&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;ok&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;repeat&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;down&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;left&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;right&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;up&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;check&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;error&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;fail&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;ok&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;repeat&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;down&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;left&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;right&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;up&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;check&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;error&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;fail&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;ok&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;repeat&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;down&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;left&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;right&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;up&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Действия (цветные)&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;error&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; action=&quot;ok&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;error&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; action=&quot;ok&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;error&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; action=&quot;ok&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;error&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; action=&quot;ok&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Банки&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;244&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;256&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;285&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;404&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;439&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1309&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1490&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1516&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;2377&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;2449&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;3001&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;3308&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;4267&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;4924&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;5030&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;5475&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;6415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;7311&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;7686&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;8967&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;9908&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;10223&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;244&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;256&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;285&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;404&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;439&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1309&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1490&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1516&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;2377&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;2449&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;3001&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;3308&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;4267&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;4924&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;5030&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;5475&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;6415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;7311&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;7686&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;8967&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;9908&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;10223&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;244&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;256&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;285&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;404&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;439&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1309&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1490&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1516&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;2377&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;2449&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;3001&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;3308&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;4267&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;4924&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;5030&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;5475&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;6415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;7311&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;7686&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;8967&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;9908&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;10223&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;244&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;256&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;285&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;404&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;439&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1309&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1490&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1516&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;2377&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;2449&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;3001&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;3308&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;4267&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;4924&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;5030&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;5475&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;6415&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;7311&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;7686&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;8967&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;9908&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;10223&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Банки (цветные)&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;244&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;256&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;285&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;404&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;439&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1309&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1490&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;1516&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;2377&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;2449&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;3001&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;3308&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;4267&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;4924&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;5030&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;5475&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;6415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;7311&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;7686&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;8967&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;9908&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; bank=&quot;10223&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;244&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;256&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;285&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;404&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;439&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1309&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1490&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;1516&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;2377&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;2449&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;3001&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;3308&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;4267&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;4924&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;5030&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;5475&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;6415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;7311&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;7686&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;8967&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;9908&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; bank=&quot;10223&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;244&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;256&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;285&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;404&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;439&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1309&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1490&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;1516&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;2377&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;2449&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;3001&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;3308&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;4267&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;4924&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;5030&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;5475&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;6415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;7311&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;7686&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;8967&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;9908&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; bank=&quot;10223&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;244&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;256&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;285&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;404&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;439&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1309&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1490&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;1516&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;2377&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;2449&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;3001&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;3308&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;4267&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;4924&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;5030&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;5475&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;6415&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;7311&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;7686&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;8967&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;9908&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; bank=&quot;10223&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Карты&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;maestro&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;mastercard&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;visa&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;visaelectron&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;belkart&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;maestro&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;mastercard&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;visa&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;visaelectron&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;belkart&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;maestro&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;mastercard&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;visa&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;visaelectron&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;belkart&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;maestro&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;mastercard&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;visa&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;visaelectron&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;belkart&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Карты (цветные)&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;maestro&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;mastercard&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;visa&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;visaelectron&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; card=&quot;belkart&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;maestro&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;mastercard&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;visa&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;visaelectron&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; card=&quot;belkart&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;maestro&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;mastercard&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;visa&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;visaelectron&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; card=&quot;belkart&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;maestro&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;mastercard&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;visa&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;visaelectron&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; card=&quot;belkart&quot; theme=&quot;alfa-on-colored&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Файлы&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;1c&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;csv&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;doc&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;pdf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;png&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;ppt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;sketch&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;svg&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;txt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;xls&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; format=&quot;xml&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;1c&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;csv&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;doc&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;pdf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;png&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;ppt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;sketch&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;svg&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;txt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;xls&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; format=&quot;xml&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;1c&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;csv&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;doc&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;pdf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;png&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;ppt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;sketch&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;svg&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;txt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;xls&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; format=&quot;xml&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;1c&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;csv&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;doc&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;pdf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;png&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;ppt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;sketch&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;svg&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;txt&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;xls&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; format=&quot;xml&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Валюта&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;rub&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;chf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;eur&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;gbp&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;jpy&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; currency=&quot;usd&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;rub&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;chf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;eur&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;gbp&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;jpy&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; currency=&quot;usd&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;rub&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;chf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;eur&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;gbp&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;jpy&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; currency=&quot;usd&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;rub&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;chf&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;eur&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;gbp&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;jpy&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; currency=&quot;usd&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Инструменты&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;close&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;calendar&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;email&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;help&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;helpfilled&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;info&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;printer&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; tool=&quot;search&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;close&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;calendar&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;email&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;help&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;helpfilled&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;info&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;printer&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;l&quot; tool=&quot;search&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;close&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;calendar&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;email&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;help&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;helpfilled&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;info&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;printer&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; tool=&quot;search&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;close&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;calendar&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;email&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;help&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;helpfilled&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;info&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;printer&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;s&quot; tool=&quot;search&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Категории&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;appliances&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;auto&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;books_movies&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;business&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;charity&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;dress&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;education&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;entertainment&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;family&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;finance&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;forgot&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;gasoline&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;housekeeping&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;investments&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;loans&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;medicine&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;mobile_internet&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;mortgage&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;other&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;person&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;pets&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;rent&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;repairs&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;restaurants&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;shopping&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;tax_fines&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;transport&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;travel&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;xl&quot; category=&quot;user&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;appliances&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;auto&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;books_movies&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;business&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;charity&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;dress&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;education&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;entertainment&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;family&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;finance&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;forgot&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;gasoline&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;housekeeping&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;investments&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;loans&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;medicine&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;mobile_internet&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;mortgage&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;other&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;person&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;pets&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;rent&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;repairs&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;restaurants&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;shopping&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;tax_fines&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;transport&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;travel&quot;&gt;&lt;/a-icon&gt;
+    &lt;a-icon size=&quot;m&quot; category=&quot;user&quot;&gt;&lt;/a-icon&gt;
+&lt;/div&gt;
+</pre>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            
+            <div class="component__section">
+                    <div>
+                        <a-heading size="m">Атрибуты</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Атрибут</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Тип</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m"><nobr>По-умолчанию</nobr></a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">action</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;check&#39;, &#39;error&#39;, &#39;fail&#39;, &#39;ok&#39;, &#39;ok_filled&#39;, &#39;repeat&#39;, &#39;down&#39;, &#39;left&#39;, &#39;right&#39;, &#39;up&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">bank</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;244&#39;, &#39;256&#39;, &#39;285&#39;, &#39;351&#39;, &#39;404&#39;, &#39;439&#39;, &#39;1309&#39;, &#39;1415&#39;, &#39;1490&#39;, &#39;1516&#39;, &#39;2377&#39;, &#39;2449&#39;, &#39;3001&#39;, &#39;3308&#39;, &#39;4267&#39;, &#39;4924&#39;, &#39;5030&#39;, &#39;5475&#39;, &#39;6415&#39;, &#39;7311&#39;, &#39;7686&#39;, &#39;7687&#39;, &#39;8967&#39;, &#39;9908&#39;, &#39;10223&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">card</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;maestro&#39;, &#39;mastercard&#39;, &#39;visa&#39;, &#39;visaelectron&#39;, &#39;belkart&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">format</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;1c&#39;, &#39;csv&#39;, &#39;default&#39;, &#39;doc&#39;, &#39;pdf&#39;, &#39;png&#39;, &#39;ppt&#39;, &#39;sketch&#39;, &#39;svg&#39;, &#39;txt&#39;, &#39;xls&#39;, &#39;xml&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">currency</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;rub&#39;, &#39;chf&#39;, &#39;eur&#39;, &#39;gbp&#39;, &#39;jpy&#39;, &#39;usd&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">tool</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;close&#39;, &#39;calendar&#39;, &#39;email&#39;, &#39;geolocation&#39;, &#39;help&#39;, &#39;helpfilled&#39;, &#39;info&#39;, &#39;payment_plus&#39;, &#39;payment_rounded_plus&#39;, &#39;printer&#39;, &#39;search&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">network</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;vk&#39;, &#39;facebook&#39;, &#39;twitter&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">user</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;body&#39;, &#39;logout&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">category</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тип иконки Варианты: &#39;appliances&#39;, &#39;auto&#39;, &#39;award&#39;, &#39;books_movies&#39;, &#39;business&#39;, &#39;business_activity&#39;, &#39;business_trip&#39;, &#39;cash&#39;, &#39;cashback&#39;, &#39;charity&#39;, &#39;dress&#39;, &#39;education&#39;, &#39;entertainment&#39;, &#39;family&#39;, &#39;finance&#39;, &#39;forgot&#39;, &#39;gasoline&#39;, &#39;gibdd_fines&#39;, &#39;health&#39;, &#39;hobby&#39;, &#39;housekeeping&#39;, &#39;investments&#39;, &#39;loans&#39;, &#39;medicine&#39;, &#39;mobile_internet&#39;, &#39;mortgage&#39;, &#39;other&#39;, &#39;person&#39;, &#39;pets&#39;, &#39;rent&#39;, &#39;repairs&#39;, &#39;restaurants&#39;, &#39;scholarship&#39;, &#39;shopping&#39;, &#39;tax_fines&#39;, &#39;transport&#39;, &#39;travel&#39;, &#39;user&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">size</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'m'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Размер компонента Варианты: &#39;s&#39;, &#39;m&#39;, &#39;l&#39;, &#39;xl&#39;, &#39;xxl&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">theme</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тема компонента Варианты: &#39;alfa-on-color&#39;, &#39;alfa-on-white&#39;, &#39;alfa-on-colored&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">class</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Дополнительный класс</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">События</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Событие</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">mouse-enter</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик события наведения курсора на иконку</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">mouse-leave</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик события снятия курсора с иконки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">click</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик клика по иконке</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+        </div>
+        <script>
+            (function() {
+                var example = true;
+                var exampleEmbed =  false ;
+
+                var editor = null;
+                var editorValue = '';
+                var beautify = null;
+                var changeTimeout = null;
+                var htmlMode = false;
+                var exampleLayout = null;
+                var exampleWindow = null;
+                var fragment = document.createElement('div');
+                var lastResolve = null;
+
+                if (exampleEmbed) {
+                    fragment = document
+                        .implementation
+                        .createDocument('http://www.w3.org/1999/xhtml', 'html', null);
+                    exampleLayout = document.getElementById('example-iframe');
+                    exampleWindow = exampleLayout.contentWindow;
+                } else {
+                    fragment = document.createElement('div');
+                    exampleLayout = document.getElementById('example-layout');
+                }
+
+                if (exampleWindow) {
+                    function receiveMessage(event) {
+                        var data = JSON.parse(event.data);
+
+                        var head = document.createElementNS('http://www.w3.org/1999/xhtml', 'head');
+                        var body = document.createElementNS('http://www.w3.org/1999/xhtml', 'body');
+
+                        head.innerHTML = data.head;
+                        body.innerHTML = data.body;
+
+                        fragment.documentElement.appendChild(head);
+                        fragment.documentElement.appendChild(body);
+
+                        lastResolve(fragment.documentElement);
+                    }
+
+                    window.addEventListener('message', receiveMessage, false);
+                }
+
+                function prepareFragment() {
+                    if (!exampleWindow) {
+                        fragment.innerHTML = exampleLayout.innerHTML.trim();
+                    } else {
+                        exampleWindow.postMessage(JSON.stringify({ type: 'get-content' }), '*');
+                    }
+
+                    return new Promise(function(resolve, reject) {
+                        if (!exampleWindow) {
+                            resolve(fragment);
+                        }
+
+                        lastResolve = resolve;
+                    });
+
+                    return lastPromise;
+                }
+
+                function cleanBpNodes(node) {
+                    // Remove scripts
+                    if (node.tagName &&
+                        (node.tagName === 'SCRIPT' || node.tagName === 'script')
+                    ) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove comments
+                    if (node.nodeType === Node.COMMENT_NODE) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove React attributes
+                    if (node.getAttribute) {
+                        if (node.getAttribute('data-reactroot') !== undefined) {
+                            node.removeAttribute('data-reactroot');
+                        }
+
+                        if (node.getAttribute('data-reactid') !== undefined) {
+                            node.removeAttribute('data-reactid');
+                        }
+                    }
+
+                    // Traverse child nodes
+                    if (node.childNodes) {
+                        for (var i = 0; i < node.childNodes.length; i++) {
+                            if (cleanBpNodes(node.childNodes[i])) {
+                                i = 0;
+                            }
+                        }
+                    }
+
+                    // Expand Blueprint node
+                    if (node.tagName &&
+                        (node.tagName.indexOf('a-'.toUpperCase()) === 0 ||
+                        node.tagName.indexOf('a-') === 0)
+                    ) {
+                        while (node.childNodes && node.childNodes.length > 0) {
+                            node.parentNode.insertBefore(node.childNodes[0], node);
+                        }
+
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                function handleEditorChange() {
+                    var newHeight =
+                        editor.getSession().getScreenLength() *
+                        editor.renderer.lineHeight +
+                        editor.renderer.scrollBar.getWidth();
+
+                    var editorElement = document.getElementById('editor');
+                    editorElement.style.height = newHeight.toString() + 'px';
+
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.resize();
+
+                    if (/*!exampleEmbed && */!htmlMode) {
+                        if (changeTimeout) {
+                            clearTimeout(changeTimeout);
+                            changeTimeout = null;
+                        }
+
+                        changeTimeout = setTimeout(function() {
+                            changeTimeout = null;
+
+                            var value = editorValue = editor.getValue();
+                            var annotations = editor.getSession().getAnnotations();
+                            var errors = annotations.filter(function(annotation) {
+                                return annotation.type === 'error';
+                            });
+
+                            if (errors.length === 0) {
+                                if (!exampleEmbed) {
+                                    try {
+                                        exampleLayout.innerHTML = value;
+
+                                        var scripts = exampleLayout.getElementsByTagName('script');
+                                        for (var s = 0; s < scripts.length; s++) {
+                                            window.eval(scripts[s].innerHTML);
+                                        }
+                                    } catch (e) {
+                                        console.error(e.stack || e);
+                                    }
+                                } else {
+                                    var tmpElement = document.createElement('div');
+                                    tmpElement.innerHTML = value
+                                        .replace('<!DOCTYPE html>', '')
+                                        .replace('<html>', '')
+                                        .replace('</html>', '')
+                                        .replace('<head', '<tmp-head')
+                                        .replace('</head', '</tmp-head')
+                                        .replace('<body', '<tmp-body')
+                                        .replace('</body', '</tmp-body');
+
+                                    var head = tmpElement.querySelector('tmp-head').innerHTML;
+                                    var body = tmpElement.querySelector('tmp-body').innerHTML;
+
+                                    exampleWindow.postMessage(JSON.stringify({
+                                        type: 'set-content',
+                                        head: head,
+                                        body: body
+                                    }), '*');
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+
+                function setupEditorRadioButtons() {
+                    var bpRadio = document.getElementById('example-radio-blueprint');
+                    var htmlRadio = document.getElementById('example-radio-html');
+
+                    bpRadio.addEventListener('click', function() {
+                        if (!htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = false;
+
+                        bpRadio.disabled = true;
+                        htmlRadio.disabled = false;
+
+                        //editor.setOptions({ readOnly: exampleEmbed });
+                        editor.setOptions({ readOnly: false });
+
+                        var scrollX = window.pageXOffset;
+                        var scrollY = window.pageYOffset;
+                        editor.setValue(editorValue, -1);
+                        window.scrollTo(scrollX, scrollY);
+                    });
+
+                    htmlRadio.addEventListener('click', function() {
+                        if (htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = true;
+
+                        bpRadio.disabled = false;
+                        htmlRadio.disabled = true;
+
+                        editor.setOptions({ readOnly: true });
+
+                        prepareFragment().then(function(fragment) {
+                            cleanBpNodes(fragment);
+
+                            var xmlFragment = document.createDocumentFragment();
+                            while (fragment.childNodes.length > 0) {
+                                xmlFragment.appendChild(fragment.childNodes[0]);
+                            }
+
+                            var serializer = new XMLSerializer();
+                            var xmlString = serializer
+                                .serializeToString(xmlFragment)
+                                .replaceAll(
+                                    ' xmlns="http://www.w3.org/1999/xhtml"',
+                                    ''
+                                );
+
+                            if (exampleWindow) {
+                                xmlString = '<!DOCTYPE html><html>' + xmlString + '</html>';
+                            }
+
+                            var f = new pp();
+                            var newValue = f.xml(xmlString);
+
+                            var scrollX = window.pageXOffset;
+                            var scrollY = window.pageYOffset;
+                            editor.setValue(newValue, -1);
+                            window.scrollTo(scrollX, scrollY);
+                        });
+                    });
+                }
+
+                function setupEditor() {
+                    editor = ace.edit('editor');
+                    beautify = ace.require('ace/ext/beautify');
+
+                    editor.setTheme('ace/theme/kuroir');
+                    editor.session.setMode('ace/mode/html');
+                    editor.setAutoScrollEditorIntoView(true);
+                    editor.setOptions({
+                        readOnly: false,//exampleEmbed,
+                        showPrintMargin: false
+                    });
+                    editor.renderer.setShowGutter(false);
+                    editor.$blockScrolling = Infinity;
+
+                    var editorElement = document.getElementById('editor');
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.getSession().on('change', handleEditorChange);
+
+                    editorValue = editor.getValue();
+
+                    setupEditorRadioButtons();
+                }
+
+                if (example) {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        setupEditor();
+                    });
+                }
+            } ());
+        </script>
+    </body>
+</html>

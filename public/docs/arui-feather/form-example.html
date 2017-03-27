@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>Example</title>
+        <link rel="stylesheet" href="../blueprint/components.css" />
+        <script src="../blueprint/components.js"></script>
+    </head>
+    <body>
+        <a-page>
+            <slot name="header">
+                <a-header></a-header>
+            </slot>
+            <slot name="content">
+                <a-app-title>
+                    <a-heading size="xl">Заголовок</a-heading>
+                </a-app-title>
+                <a-app-content>
+
+                    <a-form size="m" id="example-form" class="example-form">
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Имя</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Фамилия</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Телефон</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-phone-input width="available" size="m"></a-phone-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Дата рождения</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-calendar-input
+                                    width="available"
+                                    value="29.03.2003"
+                                    size="m"
+                                ></a-calendar-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Номер кредитной карты</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-card-input width="available" size="m"></a-card-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Адрес электронной почты</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-email-input width="available" size="m"></a-email-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Любимый цвет</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-radio-group type="line" size="m">
+                                    <a-radio text="Красный" value="red"></a-radio>
+                                    <a-radio text="Желтый" value="yellow"></a-radio>
+                                    <a-radio text="Синий" value="blue"></a-radio>
+                                </a-radio-group>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field>
+                            <a-button view="extra" type="submit" size="m">Отправить</a-button>
+                        </a-form-field>
+                    </a-form>
+                </a-app-content>
+            </slot>
+            <slot name="footer">
+                <a-footer></a-footer>
+            </slot>
+        </a-page>
+
+        <style>
+            .example-form .form {
+                max-width: 400px;
+            }
+        </style>
+
+        <script>
+            var exampleForm = document.getElementById('example-form');
+            exampleForm.addEventListener('submit', function () {
+                alert('Отправь меня!');
+            });
+        </script>
+        <script src="../inject.js"></script>
+    </body>
+</html>

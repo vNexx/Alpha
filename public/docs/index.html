@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Alfa Blueprint</title>
+        <script src="./scripts.js"></script>
+        <link rel="stylesheet" href="./blueprint/components.css" />
+        <script src="./blueprint/components.js"></script>
+        <script src="./scripts.js"></script>
+        <link rel="stylesheet" href="./styles.css" />
+        <style>
+            html, body {
+                overflow: hidden;
+            }
+        </style>
+        <script>BP.setTheme('alfa-on-white');</script>
+    </head>
+    <body>
+        <div class="layout">
+            <div class="close-layout" id="close-icon-layout">
+                <a-icon action="left" size="s"></a-icon>
+            </div>
+            <script>
+                document.getElementById('close-icon-layout').addEventListener('click', function() {
+                    closeBar();
+                });
+            </script>
+            <div class="open-layout" id="open-icon-layout">
+                <a-icon action="right" size="s"></a-icon>
+            </div>
+            <script>
+                document.getElementById('open-icon-layout').addEventListener('click', function() {
+                    openBar();
+                });
+            </script>
+            <div class="main-menu">
+                <div class="main-menu__layout-small">
+                    <div class="main-menu__layout-small-logo">
+                        <a-link url="#">
+                            <a-heading
+                                size="s"
+                                onclick="changeScreen('')"
+                            >Alfa Blueprint</a-heading>
+                        </a-link>
+                    </div>
+                    <div class="main-menu__layout-small-select">
+                        <a-select id="small-menu" mode="radio-check" size="s" options="[
+                            
+                                            {
+                                                value: 'arui-feather/amount',
+                                                text: 'amount'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/app-content',
+                                                text: 'app-content'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/app-menu',
+                                                text: 'app-menu'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/app-title',
+                                                text: 'app-title'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/attach',
+                                                text: 'attach'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/button',
+                                                text: 'button'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/calendar',
+                                                text: 'calendar'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/calendar-input',
+                                                text: 'calendar-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/card-input',
+                                                text: 'card-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/card-number',
+                                                text: 'card-number'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/checkbox',
+                                                text: 'checkbox'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/checkbox-group',
+                                                text: 'checkbox-group'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/collapse',
+                                                text: 'collapse'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/copyright',
+                                                text: 'copyright'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/dropdown',
+                                                text: 'dropdown'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/email-input',
+                                                text: 'email-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/error-page',
+                                                text: 'error-page'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/footer',
+                                                text: 'footer'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/form',
+                                                text: 'form'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/form-field',
+                                                text: 'form-field'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/header',
+                                                text: 'header'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/heading',
+                                                text: 'heading'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/highlight',
+                                                text: 'highlight'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/icon',
+                                                text: 'icon'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/inline-error',
+                                                text: 'inline-error'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/input',
+                                                text: 'input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/input-autocomplete',
+                                                text: 'input-autocomplete'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/input-group',
+                                                text: 'input-group'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/label',
+                                                text: 'label'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/link',
+                                                text: 'link'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/list',
+                                                text: 'list'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/logo',
+                                                text: 'logo'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/menu',
+                                                text: 'menu'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/menu-item',
+                                                text: 'menu-item'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/message',
+                                                text: 'message'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/money-input',
+                                                text: 'money-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/notification',
+                                                text: 'notification'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/page',
+                                                text: 'page'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/paragraph',
+                                                text: 'paragraph'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/phone-input',
+                                                text: 'phone-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/plate',
+                                                text: 'plate'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/popup',
+                                                text: 'popup'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/radio',
+                                                text: 'radio'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/radio-group',
+                                                text: 'radio-group'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/select',
+                                                text: 'select'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/sidebar',
+                                                text: 'sidebar'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/social',
+                                                text: 'social'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/spin',
+                                                text: 'spin'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/support',
+                                                text: 'support'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/textarea',
+                                                text: 'textarea'
+                                            }
+                                        ,
+                                            {
+                                                value: 'arui-feather/user',
+                                                text: 'user'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/account-select',
+                                                text: 'account-select'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/autosubmit-input',
+                                                text: 'autosubmit-input'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/company-select',
+                                                text: 'company-select'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/confirmation-modal',
+                                                text: 'confirmation-modal'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/error-page-content',
+                                                text: 'error-page-content'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/infinity-scroll',
+                                                text: 'infinity-scroll'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/inline-message',
+                                                text: 'inline-message'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/loader',
+                                                text: 'loader'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/modal',
+                                                text: 'modal'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/panel',
+                                                text: 'panel'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/retry-message',
+                                                text: 'retry-message'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/slide-down',
+                                                text: 'slide-down'
+                                            }
+                                        ,
+                                            {
+                                                value: 'corporate-components/sms-countdown',
+                                                text: 'sms-countdown'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/description-layout',
+                                                text: 'description-layout'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/header',
+                                                text: 'header'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/header-mob',
+                                                text: 'header-mob'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/menu-mob',
+                                                text: 'menu-mob'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/page-layout',
+                                                text: 'page-layout'
+                                            }
+                                        ,
+                                            {
+                                                value: 'retail-online-bank-core-ui/sms-confirmation',
+                                                text: 'sms-confirmation'
+                                            }
+                                        
+                        ]"></a-select>
+                    </div>
+                </div>
+                <div class="main-menu__layout">
+                    <div class="main-menu__section">
+                        <div>
+                            <a-link url="#">
+                                <a-heading size="l" onclick="changeScreen('')">Alfa Blueprint</a-heading>
+                            </a-link>
+                        </div>
+                        <div class="main-menu__heading-sub-label">
+                            <a-label size="s">Система прототипирования</a-label>
+                        </div>
+                    </div>
+                    
+                        <div class="main-menu__section">
+                            <div class="main-menu__title">
+                                <a-heading size="s">arui-feather 1.0.2</a-heading>
+                            </div>
+                            <ul class="main-menu__list">
+                                
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/amount"
+                                                text="amount"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/amount'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/app-content"
+                                                text="app-content"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/app-content'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/app-menu"
+                                                text="app-menu"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/app-menu'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/app-title"
+                                                text="app-title"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/app-title'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/attach"
+                                                text="attach"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/attach'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/button"
+                                                text="button"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/button'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/calendar"
+                                                text="calendar"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/calendar'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/calendar-input"
+                                                text="calendar-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/calendar-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/card-input"
+                                                text="card-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/card-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/card-number"
+                                                text="card-number"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/card-number'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/checkbox"
+                                                text="checkbox"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/checkbox'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/checkbox-group"
+                                                text="checkbox-group"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/checkbox-group'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/collapse"
+                                                text="collapse"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/collapse'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/copyright"
+                                                text="copyright"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/copyright'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/dropdown"
+                                                text="dropdown"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/dropdown'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/email-input"
+                                                text="email-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/email-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/error-page"
+                                                text="error-page"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/error-page'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/footer"
+                                                text="footer"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/footer'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/form"
+                                                text="form"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/form'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/form-field"
+                                                text="form-field"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/form-field'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/header"
+                                                text="header"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/header'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/heading"
+                                                text="heading"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/heading'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/highlight"
+                                                text="highlight"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/highlight'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/icon"
+                                                text="icon"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/icon'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/inline-error"
+                                                text="inline-error"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/inline-error'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/input"
+                                                text="input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/input-autocomplete"
+                                                text="input-autocomplete"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/input-autocomplete'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/input-group"
+                                                text="input-group"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/input-group'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/label"
+                                                text="label"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/label'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/link"
+                                                text="link"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/link'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/list"
+                                                text="list"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/list'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/logo"
+                                                text="logo"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/logo'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/menu"
+                                                text="menu"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/menu'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/menu-item"
+                                                text="menu-item"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/menu-item'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/message"
+                                                text="message"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/message'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/money-input"
+                                                text="money-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/money-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/notification"
+                                                text="notification"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/notification'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/page"
+                                                text="page"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/page'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/paragraph"
+                                                text="paragraph"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/paragraph'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/phone-input"
+                                                text="phone-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/phone-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/plate"
+                                                text="plate"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/plate'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/popup"
+                                                text="popup"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/popup'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/radio"
+                                                text="radio"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/radio'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/radio-group"
+                                                text="radio-group"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/radio-group'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/select"
+                                                text="select"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/select'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/sidebar"
+                                                text="sidebar"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/sidebar'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/social"
+                                                text="social"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/social'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/spin"
+                                                text="spin"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/spin'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/support"
+                                                text="support"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/support'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/textarea"
+                                                text="textarea"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/textarea'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#arui-feather/user"
+                                                text="user"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'arui-feather/user'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                            </ul>
+                        </div>
+                    
+                        <div class="main-menu__section">
+                            <div class="main-menu__title">
+                                <a-heading size="s">corporate-components 0.6.61</a-heading>
+                            </div>
+                            <ul class="main-menu__list">
+                                
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/account-select"
+                                                text="account-select"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/account-select'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/autosubmit-input"
+                                                text="autosubmit-input"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/autosubmit-input'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/company-select"
+                                                text="company-select"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/company-select'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/confirmation-modal"
+                                                text="confirmation-modal"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/confirmation-modal'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/error-page-content"
+                                                text="error-page-content"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/error-page-content'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/infinity-scroll"
+                                                text="infinity-scroll"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/infinity-scroll'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/inline-message"
+                                                text="inline-message"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/inline-message'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/loader"
+                                                text="loader"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/loader'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/modal"
+                                                text="modal"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/modal'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/panel"
+                                                text="panel"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/panel'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/retry-message"
+                                                text="retry-message"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/retry-message'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/slide-down"
+                                                text="slide-down"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/slide-down'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#corporate-components/sms-countdown"
+                                                text="sms-countdown"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'corporate-components/sms-countdown'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                            </ul>
+                        </div>
+                    
+                        <div class="main-menu__section">
+                            <div class="main-menu__title">
+                                <a-heading size="s">retail-online-bank-core-ui 1.0.12</a-heading>
+                            </div>
+                            <ul class="main-menu__list">
+                                
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/description-layout"
+                                                text="description-layout"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/description-layout'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/header"
+                                                text="header"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/header'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/header-mob"
+                                                text="header-mob"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/header-mob'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/menu-mob"
+                                                text="menu-mob"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/menu-mob'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/page-layout"
+                                                text="page-layout"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/page-layout'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                                        <li class="main-menu__list-item">
+                                            <a-link
+                                                url="#retail-online-bank-core-ui/sms-confirmation"
+                                                text="sms-confirmation"
+                                                size="m"
+                                                onclick="changeScreen(
+                                                    'retail-online-bank-core-ui/sms-confirmation'
+                                                )"
+                                            >
+                                            </a-link>
+                                        </li>
+                                        
+                            </ul>
+                        </div>
+                    
+                    <div class="main-menu__section" style="opacity: .5;">
+                        <br /><br />
+                        <a-label size="s">
+                            Alfa Blueprint 0.6.2
+                        </a-label>
+                    </div>
+                </div>
+            </div>
+            <iframe
+                src="./index-content.html"
+                id="iframe"
+                class="iframe"
+                width="100%"
+                height="100%"
+                frameborder="0"
+            ></iframe>
+        </div>
+    </body>
+</html>

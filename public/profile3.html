@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1" />
+    <title>Profile</title>
+    <link rel="stylesheet" href="./blueprint/components.css" />
+    <link rel="stylesheet" href="./css/bootstrap.css" />
+    <link rel="stylesheet" href="./css/alpha.css" />
+  </head>
+  <body>
+    <a-page>
+      <a-header slot="header">
+        <a-menu
+            view="horizontal"
+            content="[
+                {
+                    content: 'Базовая информация',
+                    value: 'Basic_info'
+                },
+                {
+                    content: 'Образование',
+                    value: 'Education'
+                },
+                {
+                    content: 'Опыт работы',
+                    value: 'jobs'
+                },
+                {
+                    content: 'Навыки',
+                    value: 'skills'
+                },
+                {
+                    content: 'Главная',
+                    value: 'main'
+                },
+                {
+                    content: 'Выйти',
+                    value: 'logout'
+                }
+            ]"
+            slot="menu"
+        >
+        </a-menu>
+      </a-header>
+      <a-app-title>
+          <a-heading size="xl">Профиль</a-heading>
+      </a-app-title>
+
+      <a-app-content>
+        <a-heading size="l"> Опыт работы </a-heading>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <a-form size="m" id="jobs" class="example-form">
+              <a-form-field size="m">
+                  <slot name="label">
+                      <a-label size="l">Название компании</a-label>
+                  </slot>
+                  <slot name="content">
+                      <a-input  width="default" max-length="100" size="m"></a-input>
+                  </slot>
+              </a-form-field>
+              <div class="col-sm-6">
+                <a-form-field size="m">
+                    <slot name="label">
+                        <a-label size="m">Должность</a-label>
+                    </slot>
+                    <slot name="content">
+                        <a-input  width="default" max-length="30" size="m"></a-input>
+                    </slot>
+                </a-form-field>
+              </div>
+
+              <div class="col-sm-6">
+               <a-form-field size="m">
+                    <slot name="label">
+                        <a-label size="m">Отдел</a-label>
+                    </slot>
+                    <slot name="content">
+                        <a-input  width="default" max-length="50" size="m"></a-input>
+                    </slot>
+                </a-form-field>
+              </div>
+
+              <a-form-field size="m">
+                <slot name="label">
+                    <a-label size="m">Период работы</a-label>
+                </slot>
+                <div class="period-picker period-picker_width_available">
+                    <span class="period-picker__input">
+                        <a-calendar-input width="available" value="29.03.2003" size="m" with-icon="false"></a-calendar-input>
+                    </span>
+                    <span class="period-picker__space">
+                        <a-label size="m">&mdash;</a-label>
+                    </span>
+                    <span class="period-picker__input">
+                        <a-calendar-input width="available" value="29.03.2015" size="m" with-icon="false"></a-calendar-input>
+                    </span>
+                </div>
+              </a-form-field>
+
+              <a-form-field size="m">
+                  <slot name="label">
+                      <a-label size="m">Достижения</a-label>
+                  </slot>
+                  <slot name="content">
+                    <a-textarea
+                        placeholder="Ваши успехи/достижения"
+                        width="available"
+                        ></a-textarea>
+                  </slot>
+              </a-form-field>
+
+
+              <a-form-field>
+                  <a-button view="extra" type="submit" size="m">Сохранить</a-button>
+                  <a-button size="m">
+                    <a-icon size="m" action="check" slot="icon"></a-icon>
+                    <span slot="text">Добавть место работы</span>
+                  </a-button>
+              </a-form-field>
+            </a-form>
+          </div>
+        </div>
+      </a-app-content>
+      <a-footer slot="footer"></a-footer>
+    </a-page>
+    <script src="./blueprint/components.js"></script>
+  </body>
+</html>

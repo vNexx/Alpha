@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>Example</title>
+        <link rel="stylesheet" href="../blueprint/components.css" />
+        <script src="../blueprint/components.js"></script>
+    </head>
+    <body>
+        <a-page>
+            <slot name="header">
+                <a-header></a-header>
+            </slot>
+            <slot name="content">
+                <style>
+                    .example-form .form {
+                        max-width: 400px;
+                    }
+                </style>
+
+                <a-app-title>
+                    <a-heading size="l">Форма с обычными заголовками</a-heading>
+                </a-app-title>
+                <a-app-content>
+                    <a-form size="m" class="example-form">
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Имя</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field size="m">
+                            <slot name="label">
+                                <a-label size="m">Фамилия</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+                    </a-form>
+                </a-app-content>
+
+                <a-app-title>
+                    <a-heading size="l">Форма с выносными заголовками</a-heading>
+                </a-app-title>
+                <a-app-content>
+                    <a-form size="m" class="example-form">
+                        <a-form-field view="line" size="m">
+                            <slot name="label">
+                                <a-label size="m">Имя</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+
+                        <a-form-field view="line" size="m">
+                            <slot name="label">
+                                <a-label size="m">Фамилия</a-label>
+                            </slot>
+                            <slot name="content">
+                                <a-input  width="available" max-length="20" size="m"></a-input>
+                            </slot>
+                        </a-form-field>
+                    </a-form>
+                </a-app-content>
+            </slot>
+            <slot name="footer">
+                <a-footer></a-footer>
+            </slot>
+        </a-page>
+        <script src="../inject.js"></script>
+    </body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Alfa Blueprint</title>
+        <link rel="stylesheet" href="./blueprint/components.css" />
+        <script src="./blueprint/components.js"></script>
+        <script src="./scripts.js"></script>
+        <link rel="stylesheet" href="./styles.css" />
+        <script>BP.setTheme('alfa-on-white');</script>
+    </head>
+    <body>
+        <div class="index-content">
+            <div class="index-content__section">
+                <a-heading size="xl">Alfa Blueprint</a-heading>
+                <a-paragraph>
+                    Alfa Blueprint &mdash; это система прототипирования на основе технологий HTML, CSS и JavaScript, реализующая стиль Альфа Банк. Для использования системы вам достаточно
+                    базовых знаний HTML и CSS.
+                    <a-link
+                        url="http://alfa-blueprint.vitaliygreen.ru"
+                        text="alfa-blueprint.vitaliygreen.ru"
+                        target="_blank"
+                    ></a-link>
+                </a-paragraph>
+            </div>
+
+            <div class="index-content__section">
+                <a-heading size="m">Как использовать?</a-heading>
+                <a-paragraph>
+                    1. Скачайте архив с Alfa Blueprint <a-link id="download-link" size="s" url="./alfa-blueprint-0.6.2.zip"><a-button size="s" view="extra">Скачать 0.6.2</a-button></a-link><br />
+                    2. Разархивируйте<br />
+                    3. <u>./index.html</u> &mdash; базовый шаблон для создания прототипа<br />
+                    4. <u>./docs/index.html</u> &mdash; документация по компонентам
+                </a-paragraph>
+                <script>
+                    if (window.location.protocol === 'file:') {
+                        var downloadLink = document.getElementById('download-link');
+                        downloadLink.style.display = 'none';
+                    }
+                </script>
+            </div>
+
+            <div class="index-content__section">
+                <a-heading size="m">Атрибуты</a-heading>
+                <a-paragraph>
+                    Все компоненты Alfa Blueprint обладают атрибутами.<br /><br />
+                    Атрибуты позволяют настроить внешний вид и логику поведения компонентов.
+                    Например, кнопка обладает атрибутами "size" и "view", которые позволяют выбрать
+                    размер и внешний вид кнопки.<br /><br />
+                    Об атрибутах каждого из компонентов можно узнать подробнее в документации по нему.
+                </a-paragraph>
+                <a-paragraph>
+                    <div class="index-content__example-code">
+                        <div class="index-content__example-code-wrap">
+<pre><code>&lt;a-button <u>size="s"</u> <u>view="default"</u>&gt;Обычная маленькая кнопка&lt;/a-button&gt;
+&lt;a-button <u>size="l"</u> <u>view="extra"</u>&gt;Большая кнопка для действия&lt;/a-button&gt;</code></pre>
+                        </div>
+                    </div>
+                    <div class="index-content__example">
+                        <a-theme-provider theme="alfa-on-color">
+                            <a-button
+                                size="s"
+                                view="default"
+                            >Обычная маленькая</a-button>
+                            <br /><br />
+                            <a-button
+                                size="l"
+                                view="extra"
+                            >Большая для действия</a-button>
+                        </a-theme-provider>
+                    </div>
+                </a-paragraph>
+            </div>
+
+            <div class="index-content__section">
+                <a-heading size="m">Слоты</a-heading>
+                <a-paragraph>
+                    Слоты &mdash; это механизм, позволяющий размещать ваш контент внутри
+                    компонентов Alfa Blueprint. По-умолчанию, почти все компоненты обладают
+                    слотом для контента, чтобы разместить в нем что-либо просто укажите содержимое
+                    внутри тегов компонента.
+                </a-paragraph>
+                <a-paragraph>
+                    <div class="index-content__example-code">
+                        <div class="index-content__example-code-wrap">
+<pre><code>&lt;a-button size="m"&gt;
+    <u>&lt;span>Текст кнопки&lt;/span&gt;</u>
+&lt;/a-button&gt;
+</code></pre>
+                        </div>
+                    </div>
+                    <div class="index-content__example">
+                        <a-theme-provider theme="alfa-on-color">
+                            <a-button size="m">
+                                <span>Текст кнопки</span>
+                            </a-button>
+                        </a-theme-provider>
+                    </div>
+                </a-paragraph>
+                <a-paragraph>
+                    У части компонентов есть больше, чем один слот.<br /><br />
+                    Это необходимо, чтобы в компоненте можно было разместить
+                    больше одного пользовательского контента.<br /><br />
+                    Например, кнопка обладает слотом, в который можно поставить иконку.<br /><br />
+                    Для этого создан механизм именовых слотов. О том, какие слоты у каждого компонента
+                    можно узнать в документации по нему.
+                </a-paragraph>
+                <a-paragraph>
+                    <div class="index-content__example-code">
+                        <div class="index-content__example-code-wrap">
+<pre><code>&lt;a-button size="m"&gt;
+    &lt;a-spin size="m" visible="true" <u>slot="icon"</u>&gt;&lt;/a-spin&gt;
+    &lt;span <u>slot="content"</u>&gt;
+        Загрузка...
+    &lt;/span&gt;
+&lt;/a-button&gt;
+</code></pre>
+                        </div>
+                    </div>
+                    <div class="index-content__example">
+                        <a-theme-provider theme="alfa-on-color">
+                            <a-button size="m">
+                                <a-spin size="m" visible="true" slot="icon"></a-spin>
+                                <span slot="content">
+                                    Загрузка...
+                                </span>
+                            </a-button>
+                        </a-theme-provider>
+                    </div>
+                </a-paragraph>
+            </div>
+
+            <div class="index-content__section">
+                <a-heading size="m">События</a-heading>
+                <a-paragraph>
+                    Часть компонентов Alfa Blueprint обладает механизмом событий.
+                    Благодаря ему, вы можете отслеживать взаимодействия компонента с пользователей.
+                </a-paragraph>
+                <a-paragraph>
+                    <div class="index-content__example-code">
+                        <div class="index-content__example-code-wrap">
+<pre><code>&lt;a-button size="m" id="click-example-button"&gt;Нажми на меня!&lt;/a-button&gt;
+&lt;script&gt;
+    document.getElementById('click-example-button')
+        .addEventListener('click', function() {
+            alert('Привет!');
+        });
+&lt;/script&gt;
+</code></pre>
+                        </div>
+                    </div>
+                    <div class="index-content__example">
+                        <a-theme-provider theme="alfa-on-color">
+                            <a-button
+                                size="m"
+                                id="click-example-button"
+                            >Нажми на меня!</a-button>
+                        </a-theme-provider>
+                        <script>
+                            document.getElementById('click-example-button')
+                                .addEventListener('click', function() {
+                                    alert('Привет!');
+                                });
+                        </script>
+                    </div>
+                </a-paragraph>
+            </div>
+
+            <div class="index-content__section">
+                <a-heading size="m">Публичные методы</a-heading>
+                <a-paragraph>
+                    У части компонентов Alfa Blueprint есть публичные методы.
+                    Они позволяют выполнить какое-либо действие на компоненте.<br /><br />
+                    Например, програмно поставить фокус на поле ввода.<br /><br />
+                    О публичных методах каждого из компонентов можно узнать подробнее в документации по нему.
+                </a-paragraph>
+                <a-paragraph>
+                    <div class="index-content__example-code">
+                        <div class="index-content__example-code-wrap">
+<pre><code>&lt;a-button size="s" id="example-button"&gt;Нажми на меня!&lt;/a-button&gt;
+&lt;a-input size="m" id="example-input"&gt;&lt;/a-input&gt;
+&lt;script&gt;
+    document.getElementById('example-button').addEventListener('click', function() {
+        var input = document.getElementById('example-input');
+        <u>input.focus();</u>
+    });
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+                    <div class="index-content__example">
+                        <a-theme-provider theme="alfa-on-color">
+                            <a-button
+                                size="s"
+                                id="example-button"
+                            >Нажми на меня!</a-button><br /><br />
+                            <a-input size="m" id="example-input"></a-input>
+                        </a-theme-provider>
+                        <script>
+                            document.getElementById('example-button').addEventListener('click', function() {
+                                var input = document.getElementById('example-input');
+                                input.focus();
+                            });
+                        </script>
+                    </div>
+                </a-paragraph>
+            </div>
+        </div>
+    </body>
+</html>

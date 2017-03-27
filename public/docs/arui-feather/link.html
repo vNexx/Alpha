@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>link - Alfa Blueprint</title>
+        <link rel="stylesheet" href="../blueprint/components.css" />
+        <script src="../blueprint/components.js"></script>
+        
+        <script src="../scripts.js"></script>
+        <link rel="stylesheet" href="../styles.css" />
+        <script>BP.setTheme('alfa-on-white');</script>
+        <script src="../editor/ace.js"></script>
+        <script>
+            function pp() {
+                this.shift = ['\n']; // array of shifts
+                this.step = '    '; // 4 spaces
+                var maxdeep = 100, // nesting level
+                  ix = 0;
+
+                // initialize array with shifts //
+                for(ix=0;ix<maxdeep;ix++){
+                    this.shift.push(this.shift[ix]+this.step);
+                }
+
+            };
+
+            pp.prototype.xml = function(text) {
+
+                var ar = text.replace(/>\s{0,}</g,"><")
+                             .replace(/</g,"~::~<")
+                             .replace(/xmlns\:/g,"~::~xmlns:")
+                             .replace(/xmlns\=/g,"~::~xmlns=")
+                             .split('~::~'),
+                    len = ar.length,
+                    inComment = false,
+                    deep = 0,
+                    str = '',
+                    ix = 0;
+
+                    for(ix=0;ix<len;ix++) {
+                        // start comment or <![CDATA[...]]> or <!DOCTYPE //
+                        if(ar[ix].search(/<!/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                            inComment = true;
+                            // end comment  or <![CDATA[...]]> //
+                            if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) {
+                                inComment = false;
+                            }
+                        } else
+                        // end comment  or <![CDATA[...]]> //
+                        if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) {
+                            str += ar[ix];
+                            inComment = false;
+                        } else
+                        // <elm></elm> //
+                        if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
+                            /^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) {
+                            str += ar[ix];
+                            if(!inComment) deep--;
+                        } else
+                         // <elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 ) {
+                            str = !inComment ? str += this.shift[deep++]+ar[ix] : str += ar[ix];
+                        } else
+                         // <elm>...</elm> //
+                        if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // </elm> //
+                        if(ar[ix].search(/<\//) > -1) {
+                            str = !inComment ? str += this.shift[--deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <elm/> //
+                        if(ar[ix].search(/\/>/) > -1 ) {
+                            str = !inComment ? str += this.shift[deep]+ar[ix] : str += ar[ix];
+                        } else
+                        // <? xml ... ?> //
+                        if(ar[ix].search(/<\?/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        } else
+                        // xmlns //
+                        if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) {
+                            str += this.shift[deep]+ar[ix];
+                        }
+
+                        else {
+                            str += ar[ix];
+                        }
+                    }
+
+                return  (str[0] == '\n') ? str.slice(1) : str;
+            }
+
+            String.prototype.replaceAll = function(search, replace, ignoreCase) {
+                if (ignoreCase) {
+                    var result = [];
+                    var _string = this.toLowerCase();
+                    var _search = search.toLowerCase();
+                    var start = 0, match, length = _search.length;
+                    while ((match = _string.indexOf(_search, start)) >= 0) {
+                        result.push(this.slice(start, match));
+                        start = match + length;
+                    }
+                    result.push(this.slice(start));
+                } else {
+                    result = this.split(search);
+                }
+                return result.join(replace);
+            }
+        </script>
+    </head>
+    <body>
+        <div class="component">
+            <div class="component__title">
+                <a-heading size="l">
+                    <nobr class="component__title-tag-open">&lt;a-link&gt;</nobr><nobr class="component__title-tag-close">&lt;/a-link&gt;</nobr>
+                </a-heading>
+            </div>
+
+            <div class="component__section">
+                <div class="component__description">
+                    <a-paragraph>
+                        
+                            <p>Компонент ссылки.</p>
+
+                        
+                    </a-paragraph>
+                </div>
+            </div>
+
+            
+                <div class="component__section">
+                    
+                        <div class="component__example-theme-switcher">
+                            <script>
+                                window.exampleChangeTheme = function (theme) {
+                                    document.getElementById('example-theme-provider')
+                                        .setAttribute('theme', theme);
+                                    document.getElementById('example-layout')
+                                        .setAttribute('theme', theme);
+                                }
+                            </script>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_dark"
+                                onclick="exampleChangeTheme('alfa-on-color')"
+                            ></div>
+                            <div
+                                class="component__example-theme-switcher-color component__example-theme-switcher-color_light"
+                                onclick="exampleChangeTheme('alfa-on-white')"
+                            ></div>
+                        </div>
+                        <a-theme-provider theme="alfa-on-color" id="example-theme-provider">
+                            <div class="component__example" id="example-layout">
+                                <div>
+    <a-heading size="m">Обычная ссылка</a-heading>
+</div>
+
+<div>
+    <a-link size="xl" text="Ссылка"></a-link>
+    <a-link size="xl" text="Ссылка" disabled="true"></a-link>
+    <br />
+    <a-link size="l" text="Ссылка"></a-link>
+    <a-link size="l" text="Ссылка" disabled="true"></a-link>
+    <br />
+    <a-link size="m" text="Ссылка"></a-link>
+    <a-link size="m" text="Ссылка" disabled="true"></a-link>
+    <br />
+    <a-link size="s" text="Ссылка"></a-link>
+    <a-link size="s" text="Ссылка" disabled="true"></a-link>
+</div>
+
+<div>
+    <a-heading size="m">Псевдо ссылка</a-heading>
+</div>
+
+<div>
+    <a-link size="xl" text="Ссылка" pseudo="true"></a-link>
+    <a-link size="xl" text="Ссылка" pseudo="true" disabled="true"></a-link>
+    <br />
+    <a-link size="l" text="Ссылка" pseudo="true"></a-link>
+    <a-link size="l" text="Ссылка" pseudo="true" disabled="true"></a-link>
+    <br />
+    <a-link size="m" text="Ссылка" pseudo="true"></a-link>
+    <a-link size="m" text="Ссылка" pseudo="true" disabled="true"></a-link>
+    <br />
+    <a-link size="s" text="Ссылка" pseudo="true"></a-link>
+    <a-link size="s" text="Ссылка" pseudo="true" disabled="true"></a-link>
+</div>
+
+<div>
+    <a-heading size="m">Ссылка с иконкой</a-heading>
+</div>
+
+<div>
+    <a-link size="xl" text="Ссылка">
+        <alfa-icon tool="help" size="xl" slot="icon"></alfa-icon>
+    </a-link>
+    <a-link size="xl" text="Ссылка" disabled="true">
+        <alfa-icon tool="help" size="xl" slot="icon"></alfa-icon>
+    </a-link>
+    <br />
+    <a-link size="l" text="Ссылка">
+        <alfa-icon tool="help" size="l" slot="icon"></alfa-icon>
+    </a-link>
+    <a-link size="l" text="Ссылка" disabled="true">
+        <alfa-icon tool="help" size="l" slot="icon"></alfa-icon>
+    </a-link>
+    <br />
+    <a-link size="m" text="Ссылка">
+        <alfa-icon tool="help" size="m" slot="icon"></alfa-icon>
+    </a-link>
+    <a-link size="m" text="Ссылка" disabled="true">
+        <alfa-icon tool="help" size="m" slot="icon"></alfa-icon>
+    </a-link>
+    <br />
+    <a-link size="s" text="Ссылка">
+        <alfa-icon tool="help" size="s" slot="icon"></alfa-icon>
+    </a-link>
+    <a-link size="s" text="Ссылка" disabled="true">
+        <alfa-icon tool="help" size="s" slot="icon"></alfa-icon>
+    </a-link>
+</div>
+
+<div>
+    <a-heading size="m">Ссылки без подчеркивания</a-heading>
+    <a-link size="xl">😊</a-link>
+    <a-link size="xl" disabled="true">😊</a-link>
+    <br />
+    <a-link size="l">😊</a-link>
+    <a-link size="l" disabled="true">😊</a-link>
+    <br />
+    <a-link size="m">😊</a-link>
+    <a-link size="m" disabled="true">😊</a-link>
+    <br />
+    <a-link size="s">😊</a-link>
+    <a-link size="s" disabled="true">😊</a-link>
+</div>
+
+                            </div>
+                        </a-theme-provider>
+                    
+                    <div class="component__example-code-layout" id="code-layout">
+                        <div class="component__example-code-mode">
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-blueprint"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="true"
+                                    text="Blueprint"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                            <span class="component__example-code-mode-item">
+                                <a-link
+                                    id="example-radio-html"
+                                    size="s"
+                                    pseudo="true"
+                                    disabled="false"
+                                    text="HTML"
+                                    url="javascript:void(0)"
+                                ></a-link>
+                            </span>
+                        </div>
+                        <div class="component__example-code-place">
+                            <a-select
+                                id="code-place-select"
+                                size="s"
+                                theme="alfa-on-white"
+                                mode="radio"
+                                value="[ 'embed' ]"
+                                options="[
+                                    { text: 'Под примером', value: 'embed', key: 'embed' },
+                                    { text: 'Сбоку примера', value: 'bar', key: 'bar' }
+                                ]"
+                            ></a-select>
+                            <script>
+                                document.querySelector('#code-place-select')
+                                    .addEventListener('change', function(event) {
+                                        if (event.detail[0][0] === 'embed') {
+                                            window.moveCodeToExample();
+                                        } else if (event.detail[0][0] === 'bar') {
+                                            window.moveCodeToBar();
+                                        }
+                                    });
+                            </script>
+                        </div>
+                        <div class="component__example-code">
+                            <div class="component__example-code-wrap">
+<pre id="editor">
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Обычная ссылка&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Псевдо ссылка&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot;&gt;&lt;/a-link&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot; pseudo=&quot;true&quot; disabled=&quot;true&quot;&gt;&lt;/a-link&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Ссылка с иконкой&lt;/a-heading&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;xl&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;a-link size=&quot;xl&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;xl&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;l&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;a-link size=&quot;l&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;l&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;m&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;a-link size=&quot;m&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;m&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;s&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+    &lt;a-link size=&quot;s&quot; text=&quot;Ссылка&quot; disabled=&quot;true&quot;&gt;
+        &lt;alfa-icon tool=&quot;help&quot; size=&quot;s&quot; slot=&quot;icon&quot;&gt;&lt;/alfa-icon&gt;
+    &lt;/a-link&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+    &lt;a-heading size=&quot;m&quot;&gt;Ссылки без подчеркивания&lt;/a-heading&gt;
+    &lt;a-link size=&quot;xl&quot;&gt;😊&lt;/a-link&gt;
+    &lt;a-link size=&quot;xl&quot; disabled=&quot;true&quot;&gt;😊&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;l&quot;&gt;😊&lt;/a-link&gt;
+    &lt;a-link size=&quot;l&quot; disabled=&quot;true&quot;&gt;😊&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;m&quot;&gt;😊&lt;/a-link&gt;
+    &lt;a-link size=&quot;m&quot; disabled=&quot;true&quot;&gt;😊&lt;/a-link&gt;
+    &lt;br /&gt;
+    &lt;a-link size=&quot;s&quot;&gt;😊&lt;/a-link&gt;
+    &lt;a-link size=&quot;s&quot; disabled=&quot;true&quot;&gt;😊&lt;/a-link&gt;
+&lt;/div&gt;
+</pre>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            
+            <div class="component__section">
+                    <div>
+                        <a-heading size="m">Атрибуты</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Атрибут</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Тип</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m"><nobr>По-умолчанию</nobr></a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">icon</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Иконка ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">text</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Текст ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">url</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'#'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>href ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">target</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>target ссылки Варианты: &#39;_self&#39;, &#39;_blank&#39;, &#39;_parent&#39;, &#39;_top&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">tab-index</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Number</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">0</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Последовательность перехода между контролами при нажатии на Tab</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">disabled</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Boolean</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">false</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Управление возможностью клика по ссылке</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">pseudo</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">Boolean</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">false</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Псевдо-ссылка (border-bottom: dotted)</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">size</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">'m'</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Размер компонента Варианты: &#39;xs&#39;, &#39;s&#39;, &#39;m&#39;, &#39;l&#39;, &#39;xl&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">theme</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Тема компонента Варианты: &#39;alfa-on-color&#39;, &#39;alfa-on-white&#39;.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">class</a-label>
+                                    </td>
+                                    <td class="component__list-type">
+                                        <a-label size="s">String</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s">&mdash;</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Дополнительный класс</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">Слоты</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Слот</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">icon</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Иконка ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">text</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Текст ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">События</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Событие</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">click</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик клика но ссылке</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">focus</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик фокуса компонента</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">blur</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик снятия фокуса компонента</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">mouse-enter</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик события наведения курсора на ссылку</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">mouse-leave</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Обработчик события снятия курсора с ссылки</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+
+            
+                <div class="component__section">
+                    <div>
+                        <a-heading size="m">Методы</a-heading>
+                    </div>
+                    <div class="component__list-layout">
+                        <table class="component__list">
+                            <tr>
+                                <td>
+                                    <a-label size="m">Метод</a-label>
+                                </td>
+                                <td>
+                                    <a-label size="m">Описание</a-label>
+                                </td>
+                            </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">getNode()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Возвращает корневой <a-label class="code" size="s" theme="alfa-on-white">HTMLElement</a-label> компонента.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">focus()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Ставит фокус на ссылку.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="component__list-name">
+                                        <a-label size="s">blur()</a-label>
+                                    </td>
+                                    <td>
+                                        <a-label size="s"><p>Убирает фокус с ссылки.</p>
+</a-label>
+                                    </td>
+                                </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            
+        </div>
+        <script>
+            (function() {
+                var example = true;
+                var exampleEmbed =  false ;
+
+                var editor = null;
+                var editorValue = '';
+                var beautify = null;
+                var changeTimeout = null;
+                var htmlMode = false;
+                var exampleLayout = null;
+                var exampleWindow = null;
+                var fragment = document.createElement('div');
+                var lastResolve = null;
+
+                if (exampleEmbed) {
+                    fragment = document
+                        .implementation
+                        .createDocument('http://www.w3.org/1999/xhtml', 'html', null);
+                    exampleLayout = document.getElementById('example-iframe');
+                    exampleWindow = exampleLayout.contentWindow;
+                } else {
+                    fragment = document.createElement('div');
+                    exampleLayout = document.getElementById('example-layout');
+                }
+
+                if (exampleWindow) {
+                    function receiveMessage(event) {
+                        var data = JSON.parse(event.data);
+
+                        var head = document.createElementNS('http://www.w3.org/1999/xhtml', 'head');
+                        var body = document.createElementNS('http://www.w3.org/1999/xhtml', 'body');
+
+                        head.innerHTML = data.head;
+                        body.innerHTML = data.body;
+
+                        fragment.documentElement.appendChild(head);
+                        fragment.documentElement.appendChild(body);
+
+                        lastResolve(fragment.documentElement);
+                    }
+
+                    window.addEventListener('message', receiveMessage, false);
+                }
+
+                function prepareFragment() {
+                    if (!exampleWindow) {
+                        fragment.innerHTML = exampleLayout.innerHTML.trim();
+                    } else {
+                        exampleWindow.postMessage(JSON.stringify({ type: 'get-content' }), '*');
+                    }
+
+                    return new Promise(function(resolve, reject) {
+                        if (!exampleWindow) {
+                            resolve(fragment);
+                        }
+
+                        lastResolve = resolve;
+                    });
+
+                    return lastPromise;
+                }
+
+                function cleanBpNodes(node) {
+                    // Remove scripts
+                    if (node.tagName &&
+                        (node.tagName === 'SCRIPT' || node.tagName === 'script')
+                    ) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove comments
+                    if (node.nodeType === Node.COMMENT_NODE) {
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    // Remove React attributes
+                    if (node.getAttribute) {
+                        if (node.getAttribute('data-reactroot') !== undefined) {
+                            node.removeAttribute('data-reactroot');
+                        }
+
+                        if (node.getAttribute('data-reactid') !== undefined) {
+                            node.removeAttribute('data-reactid');
+                        }
+                    }
+
+                    // Traverse child nodes
+                    if (node.childNodes) {
+                        for (var i = 0; i < node.childNodes.length; i++) {
+                            if (cleanBpNodes(node.childNodes[i])) {
+                                i = 0;
+                            }
+                        }
+                    }
+
+                    // Expand Blueprint node
+                    if (node.tagName &&
+                        (node.tagName.indexOf('a-'.toUpperCase()) === 0 ||
+                        node.tagName.indexOf('a-') === 0)
+                    ) {
+                        while (node.childNodes && node.childNodes.length > 0) {
+                            node.parentNode.insertBefore(node.childNodes[0], node);
+                        }
+
+                        node.parentNode.removeChild(node);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                function handleEditorChange() {
+                    var newHeight =
+                        editor.getSession().getScreenLength() *
+                        editor.renderer.lineHeight +
+                        editor.renderer.scrollBar.getWidth();
+
+                    var editorElement = document.getElementById('editor');
+                    editorElement.style.height = newHeight.toString() + 'px';
+
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.resize();
+
+                    if (/*!exampleEmbed && */!htmlMode) {
+                        if (changeTimeout) {
+                            clearTimeout(changeTimeout);
+                            changeTimeout = null;
+                        }
+
+                        changeTimeout = setTimeout(function() {
+                            changeTimeout = null;
+
+                            var value = editorValue = editor.getValue();
+                            var annotations = editor.getSession().getAnnotations();
+                            var errors = annotations.filter(function(annotation) {
+                                return annotation.type === 'error';
+                            });
+
+                            if (errors.length === 0) {
+                                if (!exampleEmbed) {
+                                    try {
+                                        exampleLayout.innerHTML = value;
+
+                                        var scripts = exampleLayout.getElementsByTagName('script');
+                                        for (var s = 0; s < scripts.length; s++) {
+                                            window.eval(scripts[s].innerHTML);
+                                        }
+                                    } catch (e) {
+                                        console.error(e.stack || e);
+                                    }
+                                } else {
+                                    var tmpElement = document.createElement('div');
+                                    tmpElement.innerHTML = value
+                                        .replace('<!DOCTYPE html>', '')
+                                        .replace('<html>', '')
+                                        .replace('</html>', '')
+                                        .replace('<head', '<tmp-head')
+                                        .replace('</head', '</tmp-head')
+                                        .replace('<body', '<tmp-body')
+                                        .replace('</body', '</tmp-body');
+
+                                    var head = tmpElement.querySelector('tmp-head').innerHTML;
+                                    var body = tmpElement.querySelector('tmp-body').innerHTML;
+
+                                    exampleWindow.postMessage(JSON.stringify({
+                                        type: 'set-content',
+                                        head: head,
+                                        body: body
+                                    }), '*');
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+
+                function setupEditorRadioButtons() {
+                    var bpRadio = document.getElementById('example-radio-blueprint');
+                    var htmlRadio = document.getElementById('example-radio-html');
+
+                    bpRadio.addEventListener('click', function() {
+                        if (!htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = false;
+
+                        bpRadio.disabled = true;
+                        htmlRadio.disabled = false;
+
+                        //editor.setOptions({ readOnly: exampleEmbed });
+                        editor.setOptions({ readOnly: false });
+
+                        var scrollX = window.pageXOffset;
+                        var scrollY = window.pageYOffset;
+                        editor.setValue(editorValue, -1);
+                        window.scrollTo(scrollX, scrollY);
+                    });
+
+                    htmlRadio.addEventListener('click', function() {
+                        if (htmlMode) {
+                            return;
+                        }
+
+                        htmlMode = true;
+
+                        bpRadio.disabled = false;
+                        htmlRadio.disabled = true;
+
+                        editor.setOptions({ readOnly: true });
+
+                        prepareFragment().then(function(fragment) {
+                            cleanBpNodes(fragment);
+
+                            var xmlFragment = document.createDocumentFragment();
+                            while (fragment.childNodes.length > 0) {
+                                xmlFragment.appendChild(fragment.childNodes[0]);
+                            }
+
+                            var serializer = new XMLSerializer();
+                            var xmlString = serializer
+                                .serializeToString(xmlFragment)
+                                .replaceAll(
+                                    ' xmlns="http://www.w3.org/1999/xhtml"',
+                                    ''
+                                );
+
+                            if (exampleWindow) {
+                                xmlString = '<!DOCTYPE html><html>' + xmlString + '</html>';
+                            }
+
+                            var f = new pp();
+                            var newValue = f.xml(xmlString);
+
+                            var scrollX = window.pageXOffset;
+                            var scrollY = window.pageYOffset;
+                            editor.setValue(newValue, -1);
+                            window.scrollTo(scrollX, scrollY);
+                        });
+                    });
+                }
+
+                function setupEditor() {
+                    editor = ace.edit('editor');
+                    beautify = ace.require('ace/ext/beautify');
+
+                    editor.setTheme('ace/theme/kuroir');
+                    editor.session.setMode('ace/mode/html');
+                    editor.setAutoScrollEditorIntoView(true);
+                    editor.setOptions({
+                        readOnly: false,//exampleEmbed,
+                        showPrintMargin: false
+                    });
+                    editor.renderer.setShowGutter(false);
+                    editor.$blockScrolling = Infinity;
+
+                    var editorElement = document.getElementById('editor');
+                    if (window.codeAtSidebar) {
+                        editor.setOptions({
+                            maxLines: parseInt(editorElement.offsetHeight / editor.renderer.lineHeight, 10)
+                        });
+                    } else {
+                        editor.setOptions({
+                            maxLines: Infinity
+                        });
+                    }
+
+                    editor.getSession().on('change', handleEditorChange);
+
+                    editorValue = editor.getValue();
+
+                    setupEditorRadioButtons();
+                }
+
+                if (example) {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        setupEditor();
+                    });
+                }
+            } ());
+        </script>
+    </body>
+</html>
