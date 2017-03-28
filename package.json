@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/vNexx/Alpha#readme",
   "dependencies": {
-    "fetch": "^1.1.0"
+    "babel": "^6.23.0",
+    "fetch": "^1.1.0",
+    "webpack": "^2.3.2"
   }
 }
